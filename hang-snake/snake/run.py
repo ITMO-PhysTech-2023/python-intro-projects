@@ -25,7 +25,7 @@ def process_press(key):
 
 
 snake = [random_position()]
-apple = random_position()
+Apple = random_position()
 while apple in snake:
     apple = random_position()
 
