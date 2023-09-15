@@ -6,6 +6,10 @@ WIDTH, HEIGHT = ..., ...
 direction = (1, 0)
 
 
+def print_smile():
+    print(':)')
+
+
 def random_position():
     return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
 
