@@ -1,10 +1,9 @@
 from pynput import keyboard
 from random import randint
 
-WIDTH, HEIGHT = ..., ...
+WIDTH, HEIGHT = 20, 20
 # можно приделать конфиг-файл с параметрами
 direction = (1, 0)
-
 
 def random_position():
     return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
