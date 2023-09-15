@@ -1,7 +1,7 @@
 from pynput import keyboard
 from random import randint
 
-WIDTH, HEIGHT = ..., ...
+WIDTH, HEIGHT = 25, 15
 # можно приделать конфиг-файл с параметрами
 direction = (1, 0)
 
