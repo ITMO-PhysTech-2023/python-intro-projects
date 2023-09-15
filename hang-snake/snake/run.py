@@ -3,18 +3,18 @@ from common.util import clear_terminal
 import random
 import time
 
-def create_apple(w,h):
-    return (random.randint(0,w-1), random.randint(0,h-1))
+def create_apple(WIDTH,HEIGH):
+    return (random.randint(0,WIDTH-1), random.randint(0,HEIGH-1))
 
 def field():
     clear_terminal()
     print('-' + '-' * WIDTH + '-')
-    for y in range(HEIGHT):
+    for y in range(HEIGH):
         place = '|'
         for x in range(WIDTH):
             if (x, y) in snake:
                 place += '$'
-            elif (x, y) == food:
+            elif (x, y) == apple:
                 place += 'x'
             else:
                 place += ' '
@@ -56,7 +56,7 @@ while flag:
 
 
 snake = [(1, 1)]
-apple = create_apple(WIDTH, HEIGHT)
+apple = create_apple(WIDTH, HEIGH)
 
 
 move1, move2 = 1, 0
@@ -67,8 +67,8 @@ listener.start()
 
 while True:
     x, y = snake[-1]
-    snake_head = (x + dx, y + dy)
-    if snake_head in snake or snake_head[0] >= WIDTH or snake_head[1] >= HEIGHT or snake_head[0] < 0 or snake_head[1] < 0:
+    snake_head = (x + move1, y + move2)
+    if snake_head in snake or snake_head[0] >= WIDTH or snake_head[1] >= HEIGH or snake_head[0] < 0 or snake_head[1] < 0:
         print('You lose!')
         break
     snake.append(snake_head)
