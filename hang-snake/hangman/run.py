@@ -4,7 +4,7 @@ from common.util import clear_terminal
 def create_secret():
     return 'capybara'
 
-
+#sample text
 SECRET = create_secret()
 n = len(SECRET)
 
