@@ -1,49 +1,80 @@
 from pynput import keyboard
-from random import randint
+from common.util import clear_terminal
+import random
+import time
 
-class Snake_Game():
-    def __init__(self, width: int, height: int):
-        self.width = width
-        self.height = height
-        self.direction = (1,0)
+def create_apple(w,h):
+    return (random.randint(0,w-1), random.randint(0,h-1))
 
-
-
-WIDTH, HEIGHT = 20, 10
-
-s = Snake_Game(WIDTH,HEIGHT)
-print(s.width)
-
-
-# можно приделать конфиг-файл с параметрами
-direction = (1, 0)
-
-
-def random_position():
-    return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
-
-
-def process_press(key):
-    # обработчик нажатия на клавиши (можно сделать и поаккуратнее)
-    global direction
-    match key:
-        case keyboard.Key.left:
-            direction = (0, -1)
-        case keyboard.Key.up:
-            direction = (-1, 0)
-        case keyboard.Key.right:
-            direction = (0, 1)
-        case keyboard.Key.down:
-            direction = (1, 0)
+def field():
+    clear_terminal()
+    print('-' + '-' * WIDTH + '-')
+    for y in range(HEIGHT):
+        place = '|'
+        for x in range(WIDTH):
+            if (x, y) in snake:
+                place += '$'
+            elif (x, y) == food:
+                place += 'x'
+            else:
+                place += ' '
+        place += '|'
+        print(place)
+    print('-' + '-' * WIDTH + '-')
 
 
-snake = [random_position()]
-apple = random_position()
-while apple in snake:
-    apple = random_position()
-
-# оно умеет мониторить нажатия на кнопки!
-with keyboard.Listener(on_press=process_press) as listener:
-    while True:
-        # let's play the game!
+def keyboard_check(press):
+    global move1, move2
+    try:
+        if press == keyboard.Key.right and move1 != -1:
+            move1, move2 = 1, 0
+        elif press == keyboard.Key.left and move1 != 1:
+            move1, move2 = -1, 0
+        elif press == keyboard.Key.up and move2 != 1:
+            move1, move2 = 0, -1
+        elif press == keyboard.Key.down and move2 != -1:
+            move1, move2 = 0, 1
+    except AttributeError:
         pass
+
+flag = False
+while flag == False:
+    try:
+        WIDTH = int(input("Введите ширину поля: "))
+        flag = True
+    except ValueError:
+        print("Введите целое число!")
+        flag = False
+
+while flag:
+    try:
+        HEIGH = int(input("Введите высоту поля: "))
+        flag = False
+    except ValueError:
+        print("Введите целое число!")
+        flag = True
+
+
+snake = [(1, 1)]
+apple = create_apple(WIDTH, HEIGHT)
+
+
+move1, move2 = 1, 0
+
+listener = keyboard.Listener(on_press=keyboard_check)
+listener.start()
+
+
+while True:
+    x, y = snake[-1]
+    snake_head = (x + dx, y + dy)
+    if snake_head in snake or snake_head[0] >= WIDTH or snake_head[1] >= HEIGHT or snake_head[0] < 0 or snake_head[1] < 0:
+        print('You lose!')
+        break
+    snake.append(snake_head)
+    if snake_head == apple:
+        apple = create_apple(WIDTH,WIDTH)
+    else:
+        snake.pop(0)
+    field()
+    time.sleep(0.2)
