@@ -6,9 +6,66 @@ def create_secret():
 
 
 SECRET = create_secret()
-n = len(SECRET)
+secret_letters = ['_'] * len(SECRET)
 
-FINAL_FIELD = r'''
+FIELDS = [
+r'''
+   +----+
+        |
+        |
+        |
+        |
+_______/|\_
+''',
+r'''
+   +----+
+   |    |
+        |
+        |
+        |
+_______/|\_
+''',
+r'''
+   +----+
+   |    |
+   o    |
+        |
+        |
+_______/|\_
+''',
+r'''
+   +----+
+   |    |
+   o    |
+   |    |
+        |
+_______/|\_
+''',
+r'''
+   +----+
+   |    |
+   o    |
+   |\   |
+        |
+_______/|\_
+''',
+r'''
+   +----+
+   |    |
+   o    |
+  /|\   |
+        |
+_______/|\_
+''',
+r'''
+   +----+
+   |    |
+   o    |
+  /|\   |
+  /     |
+_______/|\_
+''',
+r'''
    +----+
    |    |
    o    |
@@ -16,18 +73,44 @@ FINAL_FIELD = r'''
   / \   |
 _______/|\_
 '''
+]
 
-# здесь мы наверное хотим иметь исходное поле
-# и понимание, как оно меняется после каждого хода
-FIELD = FINAL_FIELD
-
+turn_number = 0
 while True:
-    # make a move!
-    letter = input('Enter your guess: ')
-    if ...:
-        FIELD = ...  # если не угадали, то надо обновить поле
-    else:
-        ...  # мало ли, понадобится...
+    '''
+    1. Вывести поле + вывести все известные буквы
+    2. Запрашиваем ход
+    3. Проверяем корректность хода
+    4. Проверяем успешность хода
+    5. Проверяем, наступил ли выигрыш или проигрыш
+    '''
 
+    #1
     clear_terminal()
-    print(FIELD)
+    print(''.join(secret_letters))
+    print(FIELDS[turn_number])
+
+    letter = input('Enter your guess: ').lower()
+
+    #2
+    if (len(letter)) != 1 or ord(letter) < ord('a') or ord(letter) > ord('z'):
+        print('Invalid input! Try again')
+        continue
+    #3
+    if letter in SECRET:
+        for i in range(len(SECRET)):
+            if SECRET[i] == letter:
+                secret_letters[i] = letter
+    else:
+        print('Wrong letter')
+        turn_number += 1
+
+    #5
+    if turn_number == len(FIELDS) - 1:
+        print(FIELDS[turn_number])
+        print('GAME OVER!!!')
+        break
+    if ''.join(secret_letters) == SECRET:
+        print('You won!')
+        print(SECRET.upper())
+        break
