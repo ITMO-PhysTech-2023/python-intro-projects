@@ -7,6 +7,7 @@ def create_secret():
 
 SECRET = create_secret()
 n = len(SECRET)
+GUESSED = ['_' for _ in range(n)]
 
 FINAL_FIELD = r'''
    +----+
@@ -15,19 +16,59 @@ FINAL_FIELD = r'''
   /|\   |
   / \   |
 _______/|\_
-'''
+'''.split('\n')
 
-# здесь мы наверное хотим иметь исходное поле
-# и понимание, как оно меняется после каждого хода
-FIELD = FINAL_FIELD
+HUMAN = [
+    (3, 3),
+    (4, 3),
+    (4, 2),
+    (4, 4),
+    (5, 2),
+    (5, 4)
+]
+FIELD = [
+    list(row)
+    for row in FINAL_FIELD
+]
+human_parts = 0
+for cell in HUMAN:
+    FIELD[cell[0]][cell[1]] = ' '
 
 while True:
     # make a move!
-    letter = input('Enter your guess: ')
-    if ...:
-        FIELD = ...  # если не угадали, то надо обновить поле
-    else:
-        ...  # мало ли, понадобится...
-
+    '''
+    1. Вывести виселицу + вывести все известные игроку буквы
+    2. Запрашиваем ход
+    3. Проверяем корректность ввода
+    4. Проверяем успешность хода
+    5. Проверяем, наступил ли выигрыш или проигрыш
+    '''
+    # 1
     clear_terminal()
-    print(FIELD)
+    for row in FIELD:
+        print(''.join(row))
+    print()
+    print(''.join(GUESSED))
+
+    # 2 and 3
+    letter = input('Enter your guess: ').lower()
+    if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
+        print('Invalid guess! Try again')
+        continue
+    # 4
+    if letter in SECRET:
+        for i in range(n):
+            if SECRET[i] == letter:
+                GUESSED[i] = letter
+    else:
+        cell = HUMAN[human_parts]
+        human_parts += 1
+        FIELD[cell[0]][cell[1]] = FINAL_FIELD[cell[0]][cell[1]]
+
+    # 5
+    if '_' not in GUESSED:
+        print('You won!')
+        break
+    if human_parts == len(HUMAN):
+        print('You lose!')
+        break
