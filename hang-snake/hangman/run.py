@@ -1,14 +1,20 @@
 from common.util import clear_terminal
+from random import *
 
 #Генератор слова:
 
+russian_words = ['капибара', 'селезень', 'мантикорра', 'креветка', 'крокодил', 'муравей', 'барракуда', 'антилопа',\
+                 'черепаха', 'барсук']
+english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion', 'chiken', 'jaguar', \
+                 'chameleon']
+
 
 def create_secret_eng():
-    return 'capybara'
+    return english_words[randint(0, len(english_words))]
 
 
 def create_secret_rus():
-    return 'капибара'
+    return russian_words[randint(0, len(russian_words))]
 
 
 #Выбор языка:
@@ -120,15 +126,16 @@ while True:
     print(''.join(secret_letters))
     print(FIELDS[turn_number])
 
+    #2
     letter = input(lett_choosing).lower()
 
-    #2
+    #3
     if (len(letter)) != 1 or (language == 'Eng' and (ord(letter) < ord('a') or ord(letter) > ord('z'))) or \
-            (language == 'Rud' and (ord(letter) < ord('а') or ord(letter) > ord('я'))):
+            (language == 'Rus' and (ord(letter) < ord('а') or ord(letter) > ord('я'))):
 
         print(invalid_letter)
         continue
-    #3
+    #4
     if letter in SECRET:
         for i in range(len(SECRET)):
             if SECRET[i] == letter:
