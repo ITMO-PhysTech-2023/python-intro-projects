@@ -64,8 +64,7 @@ _______/|\_'''
 words = []
 file = open(FILENAME, encoding="utf-8")
 for line in file:
-    if len(line) >= 5:
-        words.append(line)
+    words.append(line.strip())
 file.close()
 shuffle(words)
 
@@ -75,9 +74,10 @@ while want:
         want = False
     else:
         word = words.pop()
-        curword = "_" * len(word)
-        print(f"Загаданно слово состоит из {len(word)} букв.")
+        curword = "_" * (len(word))
+        print(f"Загаданно слово состоит из {(len(word))} букв.")
         tries = 0
+
         used = ""
 
         while not(word == curword or tries > 5):
@@ -125,11 +125,11 @@ while want:
         print()
         if word == curword:
             print("Вы отгадали слово!")
-            y +=1
+            y += 1
         else:
             print("Вы не смогли отгадать слово")
             print(FINAL_FIELD)
-            n +=1
+            n += 1
         print(f"Загаданное слово: \"{word}\".")
 
         again = input("Новое слово? (Д/Н) ").lower()
