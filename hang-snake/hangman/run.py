@@ -105,7 +105,7 @@ while want:
                 print("Названные буквы: ", end='')
                 print(*used)
             guess = input("Введите букву: ").lower()
-            while guess not in ALP and len(guess) != 1:
+            while guess not in ALP or len(guess) != 1:
                 guess = input("Введите одну букву из русского алфавита: ").lower()
             lett = False
             for i in range(len(word)):
