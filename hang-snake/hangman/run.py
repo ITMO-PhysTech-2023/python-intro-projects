@@ -20,7 +20,7 @@ _______/|\_
 # здесь мы наверное хотим иметь исходное поле
 # и понимание, как оно меняется после каждого хода
 FIELD = FINAL_FIELD
-
+print("комментарий")
 while True:
     # make a move!
     letter = input('Enter your guess: ')
