@@ -1,6 +1,4 @@
-from common.util import clear_terminal
 from hangman import StaticVar as sv
-import pyowm
 def create_secret():
         return 'capybara'
 
@@ -83,3 +81,31 @@ def logic(letter, dict_):
     if len(dict_) == 0:
         print("YOU WIN!!!")
         exit(0)
+
+state = [ZERO_STATE, FIRST_STATE, SECOND_STATE, THIRD_STATE, FORTH_STATE, FINAL_STATE]
+
+# Создаём мапу из исходного слова и добавляем в неё каждую букву строки
+dict = dict()
+def fillDictionary(string, dict):
+    for i in SECRET:
+        if i not in dict:
+            dict[i] = 1
+        else:
+            dict[i] += 1
+
+
+def logic(letter, dict_):
+    if letter in dict_:
+        dict_.pop(letter)
+    else:
+        StaticVar.START_NUM += 1
+    returnCurrState()
+    if StaticVar.START_NUM == 5:
+        exit(1)
+    if len(dict_) == 0:
+        print("YOU WIN!!!")
+        exit(0)
+
+
+def returnCurrState():
+    print(state[StaticVar.START_NUM])
