@@ -3,8 +3,8 @@ from random import *
 
 #Генератор слова:
 
-russian_words = ['капибара', 'селезень', 'мантикорра', 'креветка', 'крокодил', 'муравей', 'барракуда', 'антилопа',\
-                 'черепаха', 'барсук']
+russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь', 'обезьяна', 'ягуар', \
+                 'анаконда']
 english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion', 'chiken', 'jaguar', \
                  'chameleon']
 

@@ -32,5 +32,4 @@ while apple in snake:
 # оно умеет мониторить нажатия на кнопки!
 with keyboard.Listener(on_press=process_press) as listener:
     while True:
-        # let's play the game!
         pass
