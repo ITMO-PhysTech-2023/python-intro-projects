@@ -11,7 +11,7 @@ tries_left =len(field)
 letters =["_ "]*n
 while tries_left>0:
     in_or_not = 0
-    print(field[tries_lefts-tries_left])
+    print(field[tries_left-tries_left])
     print(''.join(letters))
     print('Enter your latter:')
     ans = input()
