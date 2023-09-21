@@ -83,7 +83,7 @@ while FLAG:
     # 5
     if '_' not in GUESSED:
         print('You won!')
-        FLAG, SECRET, FIELD = play_again()
+        FLAG = play_again()
 
     if human_parts == len(HUMAN):
         print('You lose!')
