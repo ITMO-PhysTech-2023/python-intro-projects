@@ -66,15 +66,26 @@ _______/|\_
 '''
 ]  # Все возможные состояния игры
 
+
+def correct_answer(letter):  # Добавление правильной буквы в поле ответа
+    new_guess_field = ''
+    for i in range(n):  # Если буква правильная, "открываем" её в поле ответа
+        if SECRET[i] == letter:
+            new_guess_field = new_guess_field + letter
+        else:
+            new_guess_field = new_guess_field + guess_field[i]
+    return new_guess_field
+
+
 while True:
     # make a move!
     print(fields[mistakes])
     print(guess_field)
     letter = input('Enter your guess: ')
-    if ...:
-        FIELD = ...  # если не угадали, то надо обновить поле
+    if letter in SECRET:  # Если буква правильная, выполняем соответствующую функцию
+        guess_field = correct_answer(letter)  # Изменяем поле для ответа
     else:
-        ...  # мало ли, понадобится...
+        mistakes = mistakes + 1  # Если буква неправильная, добавляем ошибку
     clear_terminal()
 
     # print(FIELD)
