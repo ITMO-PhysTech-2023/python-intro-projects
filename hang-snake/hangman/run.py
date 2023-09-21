@@ -87,5 +87,12 @@ while True:
     else:
         mistakes = mistakes + 1  # Если буква неправильная, добавляем ошибку
     clear_terminal()
-
+    if SECRET == guess_field:  # Если поле для ответа совпадает с загаданным словом - победа
+        print(guess_field)
+        print("You won!")
+        break
+    if mistakes == 5:  # Если 5 ошибок - проигрыш
+        print(fields[mistakes])
+        print("You lost!")
+        break
     # print(FIELD)
