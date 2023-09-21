@@ -7,7 +7,7 @@ class Word:
         random_words = ['war', 'world', 'love', 'peace', 'flower', 'music', 'house', 'animal',
                         'window', 'bridge', 'cat', 'dog', 'robot', 'human', 'tree', 'cloud',
                         'car', 'bus', 'football', 'basketball', 'ocean', 'sea', 'memory', 'brain']
-        return random_words[random.randint(0, len(random_words))]
+        return random.choice(random_words)
 
 
 class Field:
