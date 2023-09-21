@@ -1,40 +1,62 @@
+import random
+import time
 from pynput import keyboard
-from random import randint
-
-WIDTH, HEIGHT = ..., ...
-# можно приделать конфиг-файл с параметрами
-direction = (1, 0)
 
 
-def print_smile():
-    print(':)')
+WIDTH = 20
+HEIGHT = 10
+snake = [(4, 4)]
+food = (9, 9)
 
 
-def random_position():
-    return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
+dx, dy = 1, 0
 
 
-def process_press(key):
-    # обработчик нажатия на клавиши (можно сделать и поаккуратнее)
-    global direction
-    match key:
-        case keyboard.Key.left:
-            direction = (0, -1)
-        case keyboard.Key.up:
-            direction = (-1, 0)
-        case keyboard.Key.right:
-            direction = (0, 1)
-        case keyboard.Key.down:
-            direction = (1, 0)
+def draw_board():
+    print('+' + '-' * WIDTH + '+')
+    for y in range(HEIGHT):
+        row = '|'
+        for x in range(WIDTH):
+            if (x, y) in snake:
+                row += 'O'
+            elif (x, y) == food:
+                row += 'x'
+            else:
+                row += ' '
+        row += '|'
+        print(row)
+    print('+' + '-' * WIDTH + '+')
 
 
-snake = [random_position()]
-apple = random_position()
-while apple in snake:
-    apple = random_position()
-
-# оно умеет мониторить нажатия на кнопки!
-with keyboard.Listener(on_press=process_press) as listener:
-    while True:
-        # let's play the game!
+def on_key_press(key):
+    global dx, dy
+    try:
+        if key == keyboard.Key.right and dx != -1:
+            dx, dy = 1, 0
+        elif key == keyboard.Key.left and dx != 1:
+            dx, dy = -1, 0
+        elif key == keyboard.Key.up and dy != 1:
+            dx, dy = 0, -1
+        elif key == keyboard.Key.down and dy != -1:
+            dx, dy = 0, 1
+    except AttributeError:
         pass
+
+
+listener = keyboard.Listener(on_press=on_key_press)
+listener.start()
+
+
+while True:
+    x, y = snake[-1]
+    new_head = (x + dx, y + dy)
+    if new_head in snake or new_head[0] < 0 or new_head[0] >= WIDTH or new_head[1] < 0 or new_head[1] >= HEIGHT:
+        print('Игра окончена!')
+        break
+    snake.append(new_head)
+    if new_head == food:
+        food = (random.randint(0, WIDTH - 1), random.randint(0, HEIGHT - 1))
+    else:
+        snake.pop(0)
+    draw_board()
+    time.sleep(0.2)
