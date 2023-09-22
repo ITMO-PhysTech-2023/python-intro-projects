@@ -54,6 +54,8 @@ while True:
     if '_' not in GUESSED:
         print('You won!')
         break
+    else:
+        print('Я верю в твою победу')
     if human_parts == len(HUMAN):
         print('You lose!')
         break
