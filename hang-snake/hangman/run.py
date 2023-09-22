@@ -6,7 +6,7 @@ def create_secret():
 
 
 SECRET = create_secret()
-n = len(SECRET)
+n = len(SECRET) # :3
 
 FINAL_FIELD = r'''
    +----+
