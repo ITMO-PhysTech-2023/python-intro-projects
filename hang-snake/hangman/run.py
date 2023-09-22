@@ -8,13 +8,6 @@ def create_secret():
     return dictionary[random.randint(0, len(dictionary) - 1)]
 
 
-SECRET = create_secret()
-n = len(SECRET)
-
-
-# здесь мы наверное хотим иметь исходное поле
-# и понимание, как оно меняется после каждого хода
-
 word = create_secret()
 n = len(word)
 correct = []
