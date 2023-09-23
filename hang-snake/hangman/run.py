@@ -92,7 +92,7 @@ while True:
                 beginword[i]=letter
     else:
         j+=1
-        print('YOU WILL SUCCEED!!!')
+        print('YOU WILL SUCCEED!')
     print(*beginword)
     print(FIELDS[j])
     if '_' not in beginword:
