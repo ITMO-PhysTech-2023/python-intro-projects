@@ -1,61 +1,103 @@
-from common.util import clear_terminal
-def create_secret():
-    return 'capybara'
-SECRET = create_secret()
-n = len(SECRET)
-GUESSED=['_' for _ in range(n)]
 
-FINAL_FIELD = r'''
+from random import choice
+from common.util import clear_terminal
+
+FIELDS = [
+   r'''
+   +----+
+        |
+        |
+        |
+        |
+_______/|\_
+''',
+   r'''
+   +----+
+   |    |
+        |
+        |
+        |
+_______/|\_
+''',
+   r'''
+   +----+
+   |    |
+   o    |
+        |
+        |
+_______/|\_
+''',
+
+   r'''
+   +----+
+   |    |
+   o    |
+   |    |
+        |
+_______/|\_
+''',
+
+   r'''
+   +----+
+   |    |
+   o    |
+  /|    |
+        |
+_______/|\_
+''',
+
+   r'''
+   +----+
+   |    |
+   o    |
+  /|\   |
+        |
+        |
+_______/|\_
+''',
+
+   r'''
+   +----+
+   |    |
+   o    |
+  /|\   |
+  /     |
+_______/|\_
+''',
+   r'''
    +----+
    |    |
    o    |
   /|\   |
   / \   |
 _______/|\_
-'''.split('\n')
-
-HUMAN=[
-    (3,3),
-    (4,3),
-    (4,2),
-    (4,4),
-    (5,2),
-    (5,4)
+'''
 ]
-FIELD=[
-    list(row)
-    for row in FINAL_FIELD
-]
-human_parts=0
-for cell in HUMAN:
-    FIELD[cell[0]][cell[1]]=' '
+print(FIELDS[0])
+words=['capybara', 'world', 'place', 'internet', 'programma']
+word=choice(words)
+beginword=[]
+j=0
+for i in range(len(word)):
+   beginword.append('_')
 while True:
-    #1
     clear_terminal()
-    for row in FIELD:
-        print(''.join(row))
-    print()
-    print(''.join(GUESSED))
-    #2 and 3
-    letter = input('Enter your guess: ').lower()
+    letter = input('Your letter: ')
     if len(letter)!=1 and ord(letter)<ord('a') or ord(letter)>ord('z'):
         print('Invalid guess!Try again')
         continue
-    #4
-    if letter in SECRET:
-        for i in range(n):
-            if SECRET[i]==letter:
-                GUESSED[i]=letter
+    if letter in word:
+        for i in range(len(word)):
+            if word[i]==letter:
+                beginword[i]=letter
     else:
-        cell=HUMAN[human_parts]
-        human_parts+=1
-        FIELD[cell[0]][cell[1]]=FINAL_FIELD[cell[0]][cell[1]]
-    #5
-    if '_' not in GUESSED:
-        print('You won!')
+        j+=1
+        print('YOU WILL SUCCEED!!!')
+    print(*beginword)
+    print(FIELDS[j])
+    if '_' not in beginword:
+        print('You won!!!')
         break
-    else:
-        print('YOU WILL SUCCEED!')
-    if human_parts == len(HUMAN):
+    if j==len(FIELDS)-1:
         print('You lose!')
         break
