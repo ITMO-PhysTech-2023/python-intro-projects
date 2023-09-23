@@ -55,7 +55,7 @@ while True:
         print('You won!')
         break
     else:
-        print('Я верю в твою победу')
+        print('YOU WILL SUCCEED!')
     if human_parts == len(HUMAN):
         print('You lose!')
         break
