@@ -1,12 +1,20 @@
 from common.util import clear_terminal
-
+import random
+import string
 
 def create_secret():
-    return 'capybara'
+    l = 10
+    gen = ''.join(random.choices(string.ascii_lowercase, k=l))
+    print(str(gen))
+    return gen
+
 
 
 SECRET = create_secret()
+
 n = len(SECRET)
+
+GUESSED = ['_' for _ in range(n)]
 
 FINAL_FIELD = r'''
    +----+
@@ -15,19 +23,58 @@ FINAL_FIELD = r'''
   /|\   |
   / \   |
 _______/|\_
-'''
+'''.split('\n')
 
-# здесь мы наверное хотим иметь исходное поле
-# и понимание, как оно меняется после каждого хода
 FIELD = FINAL_FIELD
 
+HUMAN=[
+    (3,3),
+    (4,3),
+    (4,2),
+    (4,4),
+    (5,2),
+    (5,4)
+]
+
+FIELD= [
+    list(row)
+    for row in FINAL_FIELD
+]
+
+human_parts =0
+
+for cell in HUMAN:
+    FIELD[cell[0]][cell[1]] =' '
+
 while True:
-    # make a move!
-    letter = input('Enter your guess: ')
-    if ...:
-        FIELD = ...  # если не угадали, то надо обновить поле
+
+    # 1
+    clear_terminal()
+    for row in FIELD:
+        print(''.join(row))
+
+    print(''.join(GUESSED))
+
+    # 2 and 3
+    letter = input('Enter your guess: ').lower()
+    if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
+        print('Invalid guess! Try again')
+        continue
+    # 4
+    if letter in SECRET:
+        for i in range(n):
+            if SECRET[i] == letter:
+                GUESSED[i] = letter
     else:
-        ...  # мало ли, понадобится...
+        cell = HUMAN[human_parts]
+        human_parts += 1
+        FIELD[cell[0]][cell[1]] = FINAL_FIELD[cell[0]][cell[1]]
 
     clear_terminal()
-    print(FIELD)
+    # 5
+    if '_' not in GUESSED:
+        print('You won!')
+        break
+    if human_parts == len(HUMAN):
+        print('You lose!')
+        break
