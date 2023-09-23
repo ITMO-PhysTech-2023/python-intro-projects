@@ -8,8 +8,6 @@ def create_secret():
     print(str(gen))
     return gen
 
-
-
 SECRET = create_secret()
 
 n = len(SECRET)
