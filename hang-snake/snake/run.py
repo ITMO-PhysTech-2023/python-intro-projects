@@ -1,7 +1,20 @@
 from pynput import keyboard
 from random import randint
 
+class Snake_Game():
+    def __init__(self, width: int, height: int):
+        self.width = width
+        self.height = height
+        self.direction = (1,0)
+
+
+
 WIDTH, HEIGHT = 20, 10
+
+s = Snake_Game(WIDTH,HEIGHT)
+print(s.width)
+
+
 # можно приделать конфиг-файл с параметрами
 direction = (1, 0)
 
