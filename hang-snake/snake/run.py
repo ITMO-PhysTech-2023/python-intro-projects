@@ -1,4 +1,3 @@
-from pynput import keyboard
 from random import randint
 from tkinter import *
 
@@ -44,7 +43,6 @@ def move(snake, apple):
     part = canvas.create_rectangle(x, y, x + OBJ_SIDE, y + OBJ_SIDE, fill="green")
     snake.parts.insert(0, part)
 
-
     if x == apple.coords[0] and y == apple.coords[1]:
         canvas.delete("apple")
         apple = Apple()
@@ -53,7 +51,11 @@ def move(snake, apple):
         canvas.delete(snake.parts[-1])
         del snake.parts[-1]
 
-    window.after(GAME_SPEED, move, snake,apple)
+    if check_collisions():
+        game_over()
+    else:
+        window.after(GAME_SPEED, move, snake,apple)
+
 
 def change_direction(new_direction):
     global direction
@@ -67,8 +69,29 @@ def change_direction(new_direction):
         case 'down':
             direction = 'down'
 
+
 def random_position():
     return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
+
+
+def check_collisions():
+    x, y = snake.coords[0]
+
+    if x < 0 or x >= 700:
+        return True
+    if y < 0 or y >= 700:
+        return True
+    for body_part in snake.coords[1:]:
+        if x == body_part[0] and y == body_part[1]:
+            return True
+    return False
+
+
+def game_over():
+    canvas.delete(ALL)
+    canvas.create_text(350, 300,
+                       text="Game over!",
+                       justify=CENTER, font="Verdana 20", fill="white")
 
 
 window = Tk()
