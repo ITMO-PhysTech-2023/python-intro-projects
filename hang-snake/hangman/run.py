@@ -1,6 +1,11 @@
 import random
+from tkinter import *
 
 from common.util import clear_terminal
+
+
+WIDTH = 700
+HEIGHT = 700
 
 words = ['programming', 'python', 'laptop', 'coffee']  # Список слов
 
@@ -66,6 +71,21 @@ _______/|\_
 '''
 ]  # Все возможные состояния игры
 
+def output():
+    canvas.delete("guess")
+    canvas.create_text(350, 500,
+                       text=guess_field,
+                       justify=CENTER, font="Verdana 20", tags="guess")
+
+def move():
+    letter = letter_window.get()
+    global guess_field, mistakes
+    #letter = input('Enter your guess: ')
+    if letter in SECRET:  # Если буква правильная, выполняем соответствующую функцию
+        guess_field = correct_answer(letter)  # Изменяем поле для ответа
+    else:
+        mistakes = mistakes + 1  # Если буква неправильная, добавляем ошибку
+    window.after(1, output)
 
 def correct_answer(letter):  # Добавление правильной буквы в поле ответа
     new_guess_field = ''
@@ -77,7 +97,28 @@ def correct_answer(letter):  # Добавление правильной бук�
     return new_guess_field
 
 
-while True:
+window = Tk()
+window.title('Hangman')
+
+canvas = Canvas(window, bg="white", height=HEIGHT, width=WIDTH)
+canvas.pack()
+
+window.geometry(f"{700}x{700}+{400}+{100}")
+
+canvas.create_text(350, 550,
+                       text="Enter your guess:",
+                       justify=CENTER, font="Verdana 14")
+letter_window = Entry(window)
+canvas.create_window(350, 580, window=letter_window)
+button_widget = Button(text='GUESS',
+                           command=move)
+canvas.create_window(350, 620, window=button_widget)
+
+output()
+#move()
+
+window.mainloop()
+while False:
     # make a move!
     print(fields[mistakes])
     print(guess_field)
