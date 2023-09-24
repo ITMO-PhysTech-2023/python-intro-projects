@@ -4,10 +4,10 @@ from tkinter import *
 from common.util import clear_terminal
 
 
-WIDTH = 700
+WIDTH = 700 #Размеры окна
 HEIGHT = 700
 
-words = ['programming', 'python', 'laptop', 'coffee']  # Список слов
+words = ['programming', 'python', 'laptop', 'coffee', 'computer', 'informatics']  # Список слов
 
 
 def create_secret():
@@ -20,58 +20,8 @@ guess_field = '_' * n  # Создание слова и поля для отве
 
 mistakes = 0  # Счет количества ошибок, от которого зависит какое поле выведено на экран
 
-fields = [
-    r'''
-   +----+
-   |    |
-        |
-        |
-        |
-_______/|\_
-''',
-    r'''
-   +----+
-   |    |
-   o    |
-        |
-        |
-_______/|\_
-''',
-    r'''
-   +----+
-   |    |
-   o    |
-   |    |
-        |
-_______/|\_
-''',
-    r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-        |
-_______/|\_
-''',
-    r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-  /     |
-_______/|\_
-''',
-    r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-  / \   |
-_______/|\_
-'''
-]  # Все возможные состояния игры
 
-def output():
+def output():  #Вывод на экран
     global mistakes
     canvas.create_line(250,400,350,400, width=5)
     canvas.create_line(300, 400, 300, 100, width= 5)
@@ -88,14 +38,15 @@ def output():
         case 4:
             canvas.create_line(400, 325, 375, 375, width=3)
         case 5:
-            canvas.create_line(400, 325, 425, 375, width=3)
+            canvas.create_line(400, 325, 425, 375, width=3)  #Рисование виселицы и частей человека
 
     canvas.delete("guess")
     canvas.create_text(350, 500,
                        text=guess_field,
-                       justify=CENTER, font="Verdana 20", tags="guess")
+                       justify=CENTER, font="Verdana 20", tags="guess")  #Вывод поля для ответа
 
-def move():
+
+def move():  #Ход
     letter = letter_window.get()
     global guess_field, mistakes
     #letter = input('Enter your guess: ')
@@ -106,6 +57,7 @@ def move():
     win_lose()
     window.after(1, output)
 
+
 def correct_answer(letter):  # Добавление правильной буквы в поле ответа
     new_guess_field = ''
     for i in range(n):  # Если буква правильная, "открываем" её в поле ответа
@@ -114,6 +66,7 @@ def correct_answer(letter):  # Добавление правильной бук�
         else:
             new_guess_field = new_guess_field + guess_field[i]
     return new_guess_field
+
 
 def win_lose():
     global guess_field
@@ -142,7 +95,7 @@ window.title('Hangman')
 canvas = Canvas(window, bg="white", height=HEIGHT, width=WIDTH)
 canvas.pack()
 
-window.geometry(f"{700}x{700}+{400}+{100}")
+window.geometry(f"{700}x{700}+{400}+{100}")  #Создание окна и его настройка
 
 canvas.create_text(350, 550,
                        text="Enter your guess:",
@@ -154,25 +107,5 @@ button_widget = Button(text='GUESS',
 canvas.create_window(350, 620, window=button_widget, tags="button")
 
 output()
-#move()
 
 window.mainloop()
-while False:
-    # make a move!
-    print(fields[mistakes])
-    print(guess_field)
-    letter = input('Enter your guess: ')
-    if letter in SECRET:  # Если буква правильная, выполняем соответствующую функцию
-        guess_field = correct_answer(letter)  # Изменяем поле для ответа
-    else:
-        mistakes = mistakes + 1  # Если буква неправильная, добавляем ошибку
-    clear_terminal()
-    if SECRET == guess_field:  # Если поле для ответа совпадает с загаданным словом - победа
-        print(guess_field)
-        print("You won!")
-        break
-    if mistakes == 5:  # Если 5 ошибок - проигрыш
-        print(fields[mistakes])
-        print("You lost!")
-        break
-    # print(FIELD)
