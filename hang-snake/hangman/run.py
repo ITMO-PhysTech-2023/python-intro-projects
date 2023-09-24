@@ -118,11 +118,22 @@ def correct_answer(letter):  # Добавление правильной бук�
 def win_lose():
     global guess_field
     if SECRET == guess_field:  # Если поле для ответа совпадает с загаданным словом - победа
-        print(guess_field)
-        print("You won!")
+        canvas.delete("enter_text")
+        canvas.delete("letter_window")
+        canvas.delete("button")
+        canvas.create_text(350, 550,
+                           text="You won!",
+                           justify=CENTER, font="Verdana 14")
     if mistakes == 5:  # Если 5 ошибок - проигрыш
-        print(fields[mistakes])
-        print("You lost!")
+        canvas.delete("enter_text")
+        canvas.delete("letter_window")
+        canvas.delete("button")
+        canvas.create_text(350, 550,
+                           text="You lost!",
+                           justify=CENTER, font="Verdana 14")
+        canvas.create_text(350, 580,
+                           text=f"Answer: {SECRET}",
+                           justify=CENTER, font="Verdana 14")
 
 
 window = Tk()
@@ -135,12 +146,12 @@ window.geometry(f"{700}x{700}+{400}+{100}")
 
 canvas.create_text(350, 550,
                        text="Enter your guess:",
-                       justify=CENTER, font="Verdana 14")
+                       justify=CENTER, font="Verdana 14", tags="enter_text")
 letter_window = Entry(window)
-canvas.create_window(350, 580, window=letter_window)
+canvas.create_window(350, 580, window=letter_window, tags="letter_window")
 button_widget = Button(text='GUESS',
                            command=move)
-canvas.create_window(350, 620, window=button_widget)
+canvas.create_window(350, 620, window=button_widget, tags="button")
 
 output()
 #move()
