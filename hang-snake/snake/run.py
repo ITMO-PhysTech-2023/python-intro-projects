@@ -1,13 +1,16 @@
+import copy
+import time
 from pynput import keyboard
 from random import randint
 
-WIDTH, HEIGHT = 20, 20
-# можно приделать конфиг-файл с параметрами
-direction = (1, 0)
+WIDTH, HEIGHT = 20, 10
+SCREEN = list()
+SCREEN.append(WIDTH * ['_'])
+for i in range(HEIGHT - 2):
+    SCREEN.append(['|'] + (WIDTH - 2) * [' '] + ['|'])
+SCREEN.append(WIDTH * ['_'])
 
-
-def random_position():
-    return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
+direction = (-1, 0)
 
 
 def process_press(key):
@@ -24,6 +27,11 @@ def process_press(key):
             direction = (1, 0)
 
 
+def random_position():
+    return [randint(1, HEIGHT - 2), randint(1, WIDTH - 2)]
+
+
+counter = 0
 snake = [random_position()]
 apple = random_position()
 while apple in snake:
@@ -32,4 +40,18 @@ while apple in snake:
 # оно умеет мониторить нажатия на кнопки!
 with keyboard.Listener(on_press=process_press) as listener:
     while True:
+        screen = copy.deepcopy(SCREEN)
+        screen[apple[0]][apple[1]] = 'a'
+        screen[snake[0][0]][snake[0][1]] = 'S'
+        if apple in snake:
+            apple = random_position()
+            counter += 1
+        snake[0][0] += direction[0]
+        snake[0][1] += direction[1]
+        for i in screen:
+            print(''.join(i))
+        if (snake[0][0] not in range(len(screen))) or (snake[0][1] not in range(len(screen[1]))):
+            print('Game over!\n Your score: ', counter)
+            break
+        time.sleep(0.25)
         pass

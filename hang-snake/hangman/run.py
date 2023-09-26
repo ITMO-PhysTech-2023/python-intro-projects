@@ -1,11 +1,11 @@
 from common.util import clear_terminal
 from random import *
 
-#Генератор слова:
+# Генератор слова:
 
-russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь', 'обезьяна', 'ягуар', \
+russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь', 'обезьяна', 'ягуар',
                  'анаконда']
-english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion', 'chiken', 'jaguar', \
+english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion', 'chicken', 'jaguar',
                  'chameleon']
 
 
@@ -17,12 +17,12 @@ def create_secret_rus():
     return russian_words[randint(0, len(russian_words))]
 
 
-#Выбор языка:
+# Выбор языка:
 while True:
     language = input('Select language/Выберите язык (Eng/Rus): ')
     if language == 'Eng':
         SECRET = create_secret_eng()
-        lett_choosing = 'Enter your letter: '
+        letter_choosing = 'Enter your letter: '
         invalid_letter = 'Invalid input! Try again'
         wrong_letter = "This letter isn't in the word"
         losing = 'GAME OVER!'
@@ -31,7 +31,7 @@ while True:
         break
     elif language == 'Rus':
         SECRET = create_secret_rus()
-        lett_choosing = 'Введите букву: '
+        letter_choosing = 'Введите букву: '
         invalid_letter = 'Некорректный ввод. Попробуйте еще раз'
         wrong_letter = 'Этой буквы нет в слове'
         losing = 'ПОТРАЧЕНО.'
@@ -45,71 +45,71 @@ while True:
 secret_letters = ['_'] * len(SECRET)
 
 FIELDS = [
-r'''
-   +----+
-        |
-        |
-        |
-        |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-        |
-        |
-        |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-   o    |
-        |
-        |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-   o    |
-   |    |
-        |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-   o    |
-   |\   |
-        |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-        |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-  /     |
-_______/|\_
-''',
-r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-  / \   |
-_______/|\_
-'''
-]
+    r'''
+       +----+
+            |
+            |
+            |
+            |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+            |
+            |
+            |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+       o    |
+            |
+            |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+       o    |
+       |    |
+            |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+       o    |
+       |\   |
+            |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+       o    |
+      /|\   |
+            |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+       o    |
+      /|\   |
+      /     |
+    _______/|\_
+    ''',
+    r'''
+       +----+
+       |    |
+       o    |
+      /|\   |
+      / \   |
+    _______/|\_
+    '''
+    ]
 
 turn_number = 0
 while True:
@@ -121,21 +121,21 @@ while True:
     5. Проверяем, наступил ли выигрыш или проигрыш
     '''
 
-    #1
+    # 1
     clear_terminal()
     print(''.join(secret_letters))
     print(FIELDS[turn_number])
 
-    #2
-    letter = input(lett_choosing).lower()
+    # 2
+    letter = input(letter_choosing).lower()
 
-    #3
+    # 3
     if (len(letter)) != 1 or (language == 'Eng' and (ord(letter) < ord('a') or ord(letter) > ord('z'))) or \
             (language == 'Rus' and (ord(letter) < ord('а') or ord(letter) > ord('я'))):
 
         print(invalid_letter)
         continue
-    #4
+    # 4
     if letter in SECRET:
         for i in range(len(SECRET)):
             if SECRET[i] == letter:
@@ -144,7 +144,7 @@ while True:
         print(wrong_letter)
         turn_number += 1
 
-    #5
+    # 5
     if turn_number == len(FIELDS) - 1:
         print(FIELDS[turn_number])
         print(losing)
