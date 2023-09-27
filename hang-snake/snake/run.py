@@ -2,13 +2,12 @@ import copy
 import time
 from pynput import keyboard
 from random import randint
+import os
 
-WIDTH, HEIGHT = 20, 10
+WIDTH, HEIGHT = 20, 20
 SCREEN = list()
-SCREEN.append(WIDTH * ['_'])
-for i in range(HEIGHT - 2):
-    SCREEN.append(['|'] + (WIDTH - 2) * [' '] + ['|'])
-SCREEN.append(WIDTH * ['_'])
+for i in range(HEIGHT - 1):
+    SCREEN.append(WIDTH * ['.'])
 
 direction = (-1, 0)
 
@@ -32,25 +31,41 @@ def random_position():
 
 
 counter = 0
-snake = [random_position()]
+snake_head = random_position()
+snake = [copy.deepcopy(snake_head)]
 apple = random_position()
-while apple in snake:
-    apple = random_position()
+
+
+def apple_generation():
+    global apple
+    while apple in snake:
+        apple = random_position()
+    return apple
+
 
 # оно умеет мониторить нажатия на кнопки!
 with keyboard.Listener(on_press=process_press) as listener:
     while True:
+        field = ''
         screen = copy.deepcopy(SCREEN)
         screen[apple[0]][apple[1]] = 'a'
-        screen[snake[0][0]][snake[0][1]] = 'S'
+        for j in snake:
+            screen[j[0]][j[1]] = 'o'
+        screen[snake_head[0]][snake_head[1]] = 'S'
         if apple in snake:
-            apple = random_position()
+            apple_generation()
+            snake.insert(0, copy.deepcopy(snake_head))
             counter += 1
-        snake[0][0] += direction[0]
-        snake[0][1] += direction[1]
+        else:
+            snake.insert(0, copy.deepcopy(snake_head))
+            snake.pop()
+        snake_head[0] += direction[0]
+        snake_head[1] += direction[1]
         for i in screen:
-            print(''.join(i))
-        if (snake[0][0] not in range(len(screen))) or (snake[0][1] not in range(len(screen[1]))):
+            field += ('  '.join(i) + '\n')
+        print('\n' * 5)
+        print(field)
+        if (snake_head[0] not in range(len(screen))) or (snake_head[1] not in range(len(screen[1]))) or (snake_head in snake):
             print('Game over!\n Your score: ', counter)
             break
         time.sleep(0.25)
