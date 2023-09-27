@@ -32,7 +32,7 @@ while True:
             else:
                 answer = 'Эта буква уже оказалась неверной! Выберите другую!'
                 continue
-        else:
+        elif letter in word:
             if letter not in correct:
                 correct.append(letter)
                 answer = 'Молодец!'
@@ -53,9 +53,12 @@ while True:
         print(FIELDS[tries])
 
         if tries <= 0:
-            answer = 'К сожалению, вы проиграли! Увидимся в аду!'
+            answer = r'''К сожалению, вы проиграли! Увидимся в аду!
+            Начинаем новую игру?'''
+            input()
             break
 
         if len(correct) == len(set(word)):
-            print('Поздравляю!')
+            print('Поздравляю! Начинаем новую игру?')
+            input()
             break
