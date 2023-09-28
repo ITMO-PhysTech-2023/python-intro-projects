@@ -1,5 +1,5 @@
-from common.util import clear_terminal
 import random
+import os
 
 def field(a):
 
@@ -71,7 +71,6 @@ def create_secret():
 
 SECRET = create_secret()
 WORD = ['_' for i in range(len(SECRET)-1)]
-
 already_named = set()
 TRIES = 7
 FIELD = field(TRIES)
@@ -96,10 +95,10 @@ while TRIES>0:
             print(*WORD)
             print("YOU WIN!!")
             break
+
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("не подошли: ", *already_named)
     print(*WORD)
-
-    clear_terminal()
     print(FIELD)
 if TRIES==0:
     print(SECRET)
