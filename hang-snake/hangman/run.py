@@ -1,5 +1,11 @@
+
+import os
+import random
+
 def create_secret():
-    return 'capybara'
+    words = ['capybara', 'dog', 'cat', 'rat', 'night', 'flash', 'wolverine']
+    return random.choice(words)
+
 
 
 SECRET = create_secret()
@@ -7,9 +13,9 @@ n = len(SECRET)
 GUESSED = ['_' for i in range(n)]
 
 FINAL_FIELD = r'''
-
-
    +----+
+   |    | 
+   o    |
   /|\   |
   / \   |
 _______/|\_
@@ -34,19 +40,21 @@ for cell in HUMAN:
     FIELD[cell[0]][cell[1]] = ' '
 
 while True:
+    os.system('cls')
     for row in FIELD:
         print(''.join(row))
     print()
     print(''.join(GUESSED))
     if '_' not in GUESSED:
-        print('You won!')
+        print('Вы выиграли!')
         break
     if human_parts == len(HUMAN):
-        print('You lose!')
+        print('Вы проиграли!')
+        print('Верное слово было:', SECRET)
         break
-    letter = input('Enter your guess: ').lower()
+    letter = input('Введите букву: ').lower()
     if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
-        print('Invalid guess! Try again')
+        print('Неправильный синтаксис! Попробуйте снова')
         continue
     if letter in SECRET:
         for i in range(n):
