@@ -2,7 +2,6 @@ from common.util import clear_terminal
 import time
 
 from common.util import clear_terminal
-from hangman.provider import LetterProvider, RandomLetterProvider
 
 def create_secret():
     return 'capybara'
