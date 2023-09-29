@@ -1,13 +1,12 @@
+import time
+
 from common.util import clear_terminal
+from hangman.provider import LetterProvider, RandomLetterProvider
 
 
 def create_secret():
     return 'capybara'
 
-
-SECRET = create_secret()
-n = len(SECRET)
-GUESSED = ['_' for _ in range(n)]
 
 FINAL_FIELD = r'''
    +----+
@@ -26,49 +25,85 @@ HUMAN = [
     (5, 2),
     (5, 4)
 ]
-FIELD = [
-    list(row)
-    for row in FINAL_FIELD
-]
-human_parts = 0
-for cell in HUMAN:
-    FIELD[cell[0]][cell[1]] = ' '
+HUMAN_PARTS = len(HUMAN)
 
-while True:
-    # make a move!
-    '''
-    1. Вывести виселицу + вывести все известные игроку буквы
-    2. Запрашиваем ход
-    3. Проверяем корректность ввода
-    4. Проверяем успешность хода
-    5. Проверяем, наступил ли выигрыш или проигрыш
-    '''
-    # 1
-    clear_terminal()
-    for row in FIELD:
-        print(''.join(row))
-    print()
-    print(''.join(GUESSED))
 
-    # 2 and 3
-    letter = input('Enter your guess: ').lower()
-    if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
-        print('Invalid guess! Try again')
-        continue
-    # 4
-    if letter in SECRET:
-        for i in range(n):
-            if SECRET[i] == letter:
-                GUESSED[i] = letter
-    else:
-        cell = HUMAN[human_parts]
-        human_parts += 1
-        FIELD[cell[0]][cell[1]] = FINAL_FIELD[cell[0]][cell[1]]
+class Field:
+    def __init__(self):
+        self.remaining_fails = HUMAN_PARTS
+        self.matrix = [
+            list(row)
+            for row in FINAL_FIELD
+        ]
+        for row, col in HUMAN:
+            self.matrix[row][col] = ' '
 
-    # 5
-    if '_' not in GUESSED:
-        print('You won!')
-        break
-    if human_parts == len(HUMAN):
-        print('You lose!')
-        break
+    def print(self):
+        for row in self.matrix:
+            print(''.join(row))
+        print()
+
+    def add_human_part(self):
+        row, col = HUMAN[-self.remaining_fails]
+        self.remaining_fails -= 1
+        self.matrix[row][col] = FINAL_FIELD[row][col]
+
+
+class HangmanGame:
+    def __init__(self, letter_provider: LetterProvider, step_sleep: int):
+        self.field = Field()
+        self.step_sleep = step_sleep
+        self.provider = letter_provider
+        self.secret = create_secret()
+        self.guessed = ['_' for _ in range(len(self.secret))]
+
+    def read_guess(self) -> str:
+        while True:
+            letter = self.provider.get_next_letter().lower()
+            if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
+                print('Invalid guess! Try again (enter a letter)')
+                continue
+            return letter
+
+    def check_guess(self, letter: str):
+        if letter in self.secret:
+            for i in range(len(self.secret)):
+                if self.secret[i] == letter:
+                    self.guessed[i] = letter
+        else:
+            self.field.add_human_part()
+
+    def is_won(self) -> bool:
+        return '_' not in self.guessed
+
+    def is_lost(self) -> bool:
+        return self.field.remaining_fails == 0
+
+    def step(self):
+        letter = self.read_guess()
+        self.check_guess(letter)
+        time.sleep(self.step_sleep)
+
+    def show(self):
+        clear_terminal()
+        self.field.print()
+        print(''.join(self.guessed))
+
+    def run(self):
+        self.show()
+        while True:
+            self.step()
+            if self.is_won():
+                self.show()
+                print('Cool! You won!')
+                break
+            if self.is_lost():
+                self.show()
+                print('Wow, you lost! Sad :(')
+                break
+            self.show()
+
+
+provider = RandomLetterProvider()
+game = HangmanGame(provider, 1)
+game.run()
