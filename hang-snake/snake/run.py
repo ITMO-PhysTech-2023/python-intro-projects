@@ -4,16 +4,16 @@ from tkinter import *
 WIDTH = 700
 HEIGHT = 700
 OBJ_SIDE = 35
-GAME_SPEED = 100
+GAME_SPEED = 50
 direction = 'right'
-
+score = 0
 
 class Snake:
     def __init__(self):
         self.coords = []
         self.parts = []
 
-        self.coords.append([35,35])
+        self.coords.append([OBJ_SIDE, OBJ_SIDE])
 
         for x,y in self.coords:
             part = canvas.create_rectangle(x, y, x + OBJ_SIDE, y + OBJ_SIDE, fill="green")
@@ -29,6 +29,7 @@ class Apple:
 
 
 def move(snake, apple):
+    global score
     x, y = snake.coords[0]
     if direction == 'left':
         x = x - OBJ_SIDE
@@ -45,6 +46,8 @@ def move(snake, apple):
 
     if x == apple.coords[0] and y == apple.coords[1]:
         canvas.delete("apple")
+        score = score + 1
+        label.config(text="Score: {}".format(score))
         apple = Apple()
     else:
         del snake.coords[-1]
@@ -59,15 +62,7 @@ def move(snake, apple):
 
 def change_direction(new_direction):
     global direction
-    match new_direction:
-        case 'left':
-            direction = 'left'
-        case 'right':
-            direction = 'right'
-        case 'up':
-            direction = 'up'
-        case 'down':
-            direction = 'down'
+    direction = new_direction
 
 
 def random_position():
@@ -92,6 +87,9 @@ def game_over():
     canvas.create_text(350, 300,
                        text="Game over!",
                        justify=CENTER, font="Verdana 20", fill="white")
+    canvas.create_text(350, 330,
+                       text="Score: {}".format(score),
+                       justify=CENTER, font="Verdana 20", fill="white")
 
 
 window = Tk()
@@ -100,17 +98,21 @@ window.title('Sneik')
 canvas = Canvas(window, bg="black", height=HEIGHT, width=WIDTH)
 canvas.pack()
 
+label = Label(window, text="Score: {}".format(score),
+                        font=("Verdana", 16))
+label.pack()
+
 snake = Snake()
 apple = Apple()
 
 
-window.geometry(f"{700}x{700}+{400}+{100}")
+window.geometry(f"{700}x{740}+{400}+{100}")
 
 move(snake, apple)
 
-window.bind('<Up>', lambda event: change_direction('up'))
-window.bind('<Down>', lambda event: change_direction('down'))
-window.bind('<Left>', lambda event: change_direction('left'))
-window.bind('<Right>', lambda event: change_direction('right'))
+window.bind('<w>', lambda event: change_direction('up'))
+window.bind('<s>', lambda event: change_direction('down'))
+window.bind('<a>', lambda event: change_direction('left'))
+window.bind('<d>', lambda event: change_direction('right'))
 
 window.mainloop()

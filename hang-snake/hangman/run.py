@@ -48,6 +48,7 @@ def output():  #Вывод на экран
 
 def move():  #Ход
     letter = letter_window.get()
+    letter_window.delete(0, END)   # Очистка окна
     global guess_field, mistakes
     #letter = input('Enter your guess: ')
     if letter in SECRET:  # Если буква правильная, выполняем соответствующую функцию
