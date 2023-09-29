@@ -29,7 +29,7 @@ HUMAN = [
 ]
 
 human_parts = 0
-ch = 0  # индекс части тела
+ch = 0
 chasti_tela = ['o', '|', '/', '\\', '/', '\\']
 
 class Field2:
