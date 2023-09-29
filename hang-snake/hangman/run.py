@@ -4,7 +4,7 @@ from tkinter import *
 from common.util import clear_terminal
 
 
-WIDTH = 700 #Размеры окна
+WIDTH = 700  #Размеры окна
 HEIGHT = 700
 
 words = ['programming', 'python', 'laptop', 'coffee', 'computer', 'informatics']  # Список слов
@@ -46,6 +46,9 @@ def output():  #Вывод на экран
                        justify=CENTER, font="Verdana 20", tags="guess")  #Вывод поля для ответа
 
 
+def enterpressed(event):
+    move()
+
 def move():  #Ход
     letter = letter_window.get()
     letter_window.delete(0, END)   # Очистка окна
@@ -75,6 +78,7 @@ def win_lose():
         canvas.delete("enter_text")
         canvas.delete("letter_window")
         canvas.delete("button")
+        canvas.delete("comm")
         canvas.create_text(350, 550,
                            text="You won!",
                            justify=CENTER, font="Verdana 14")
@@ -82,6 +86,7 @@ def win_lose():
         canvas.delete("enter_text")
         canvas.delete("letter_window")
         canvas.delete("button")
+        canvas.delete("comm")
         canvas.create_text(350, 550,
                            text="You lost!",
                            justify=CENTER, font="Verdana 14")
@@ -103,10 +108,14 @@ canvas.create_text(350, 550,
                        justify=CENTER, font="Verdana 14", tags="enter_text")
 letter_window = Entry(window)
 canvas.create_window(350, 580, window=letter_window, tags="letter_window")
+letter_window.focus()
 button_widget = Button(text='GUESS',
                            command=move)
 canvas.create_window(350, 620, window=button_widget, tags="button")
-
+canvas.create_text(350, 650,
+                       text="(Можно делать ввод по нажатию клавиши Вверх)",
+                       justify=CENTER, font="Verdana 8", tags="comm")
+window.bind('<Up>', enterpressed)  #Можно делать ввод по клавише "Вверх"
 output()
 
 window.mainloop()
