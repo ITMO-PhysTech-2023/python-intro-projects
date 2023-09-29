@@ -8,11 +8,9 @@ l=1
 snake=[(x, y)] # список координат
 x1,y1=0,0
 fps=10
-
 pygame.init()
 sc=pygame.display.set_mode([SIZE, SIZE])
 clock=pygame.time.Clock()
-
 while True:
     sc.fill(pygame.Color('black'))# перед каждым след действием красит поле игры в черный
     [(pygame.draw.rect(sc,pygame.Color('green'),(i,j,SIZE_body,SIZE_body))) for i,j in snake]
@@ -31,16 +29,11 @@ while True:
         break
     if len(snake)!=len(set(snake)):# проверка на самопоедание ( в сете могут быть повторяющиеся координаты => змея уперлась в себя)
         break
-
-
-
     pygame.display.flip()
     clock.tick(fps)
-
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             exit()
-
     # управление
     key=pygame.key.get_pressed()
     if key[pygame.K_w]:
