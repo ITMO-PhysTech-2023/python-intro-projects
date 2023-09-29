@@ -3,6 +3,7 @@ from random import randint
 import os
 import time
 import snake_config as config
+import threading
 
 def terminal_size():
     return os.get_terminal_size()
@@ -15,7 +16,7 @@ def clear_terminal():
 
 WIDTH, HEIGHT = config.WIDTH, config.HEIGHT
 DIRECTION = (1, 0)
-BASE_LENGTH = 2
+BASE_LENGTH = 4
 MAX_APPLES = 3
 
 body_symbol = '$'
@@ -24,8 +25,8 @@ headl_symbol = '←'
 headr_symbol = '→'
 headu_symbol = '↑'
 headd_symbol = '↓'
-borderv_symbol = 'I'
-borderh_symbol = '='
+borderv_symbol = '|'
+borderh_symbol = '-'
 apple_symbol = '0'
 
 class Snake_Field:
@@ -61,6 +62,9 @@ class Snake:
     def crawl(self, Snake_Field):
 
         head = [self.head[0] + self.direction[0], self.head[1] + self.direction[1]]                # Перемещаем голову и проверяем условия на столкновения и съедение яблока
+        if head == self.body[1]:
+            head = [self.head[0] - self.direction[0], self.head[1] - self.direction[1]]
+            self.head = head
         if (head[1] < 0 or head[1] > Snake_Field.width or head[0] < 0 or head[0] > Snake_Field.height or head in self.body) and self.direction != (0, 0):
             snake_game_over()
         else:
@@ -103,12 +107,13 @@ def spawn_Snake(Snake_Field, Snake):                             # Спауни�
     elif head[1] + (BASE_LENGTH - 1) <= borders[3]:
         for i in range(1, BASE_LENGTH):
             Snake.body.append([head[0], head[1] + i])
+    Snake.head = Snake.body[0]
 
     print('snake spawned:', Snake.body)
 
 def print_Snake_Field(Snake_Field, Snake):                             # Выводим поле на печать посимвольно
     print(borderh_symbol * (Snake_Field.width + 2))
-    for i in range(0, Snake_Field.height):
+    for i in range(0, Snake_Field.height + 1):
         print(borderv_symbol, end = '')
         for j in range(Snake_Field.width):
             cell = [i, j]
@@ -149,38 +154,58 @@ def process_press(key):
         case keyboard.Key.down:
             direction = (1, 0)
 
+FPS = 70
+
+def await_input():
+    global direction, counter
+    with keyboard.Listener(on_press=process_press) as listener:
+        for i in range(int((1 / FPS) / 0.001) + 1):
+            time.sleep(0.001)
+        counter += 1
+    
+
+def game_move(Snake, Snake_Field):
+    global counter, eaten
+    Snake.set_direction(direction)
+    eaten = Snake.crawl(Snake_Field)
+    clear_terminal()
+    print_Snake_Field(field, snake)
+    if counter % 30 == 0 or (eaten and field.apples == []):
+        counter = 0
+        if len(field.apples) >= MAX_APPLES:
+            field.delete_apple(0)
+        new_apple = field.spawn_apple()
+        while new_apple in snake.body:
+            if len(field.apples) > 0:
+                field.delete_apple(0)
+            new_apple = field.spawn_apple()
 
 field = Snake_Field()
 snake = Snake()
 spawn_Snake(field, snake)
-snake.head = snake.body[0]
-snake.crawl(field)
 
 direction = (0, 0)
 
-#process_press
-#snake.crawl(field)
-field.spawn_apple()
+
 
 input('Ready to play?')
-# оно умеет мониторить нажатия на кнопки!
 
-with keyboard.Listener(on_press=process_press) as listener:
-    counter = 0
-    while not EXIT:
-        clear_terminal()
-        print_Snake_Field(field, snake)
-        time.sleep(0.2)
-        counter += 1
-        snake.set_direction(direction)
-        eaten = snake.crawl(field)
-        if counter % 30 == 0 or eaten:
-            counter = 0
-            if len(field.apples) >= MAX_APPLES:
-                field.delete_apple(0)
-            new_apple = field.spawn_apple()
-            while new_apple in snake.body:
-                if len(field.apples) >= MAX_APPLES:
-                    field.delete_apple(0)
-                new_apple = field.spawn_apple()
-        
+
+counter = 0
+time_span = 0.2
+while not EXIT:
+    e1 = threading.Event()
+    e2 = threading.Event()
+
+    t1 = threading.Thread(target=await_input, args=())
+    t2 = threading.Thread(target=game_move, args=(snake, field))
+
+
+    t1.start()
+    t2.start()
+
+    e1.set()
+
+
+    t1.join()
+    t2.join()
