@@ -61,18 +61,8 @@ with keyboard.Listener(on_press=process_press) as listener:
             for i in range(snake_tail, 0, -1):
                 snake[i][0] = snake[i - 1][0]
                 snake[i][1] = snake[i - 1][1]
-            snake[0][0] = (snake[0][0] + direction[0]) % WIDTH
-            snake[0][1] = (snake[0][1] + direction[1]) % HEIGHT
-        else:
-            snake[0][0] = (snake[0][0] + direction[0]) % WIDTH
-            snake[0][1] = (snake[0][1] + direction[1]) % HEIGHT
-
-        '''for i in range(1, len(snake)):
-            if snake[0] == elem:
-                os.system('cls')
-                print('GAME OVER!!!!!!!!!')
-                break
-                break'''
+        snake[0][0] = (snake[0][0] + direction[0]) % WIDTH
+        snake[0][1] = (snake[0][1] + direction[1]) % HEIGHT
 
         if snake[0][0] == apple[0] and snake[0][1] == apple[1]:
             apple = random_position()
@@ -80,4 +70,3 @@ with keyboard.Listener(on_press=process_press) as listener:
             snake.insert(0, [snake[0][0] + direction[0], snake[0][1] + direction[1]])
 
         time.sleep(0.5)
-

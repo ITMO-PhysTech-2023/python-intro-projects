@@ -1,4 +1,20 @@
-from common.util import clear_terminal
+import os
+import time
+import random
+
+from hangmanclasses import GameHangman
+
+game = GameHangman()
+game.RunHangman()
+
+
+
+
+
+
+
+
+'''from common.util import clear_terminal
 import os
 import time
 import random
@@ -13,14 +29,14 @@ SECRET = [elem for elem in create_secret()]
 guessed = ['_' for elem in SECRET]
 HUMAN = [(3, 3), (4, 3), (4, 2), (4, 4), (5, 2), (5, 4)]
 
-FINAL_FIELD = r'''
+FINAL_FIELD = r
    +----+
    |    |
    o    |
   /|\   |
   / \   |
 _______/|\____
-'''.split('\n')
+.split(\n)
 
 FIELD = [
     list(row)
@@ -66,4 +82,4 @@ while True:
     else:
         print('НОРМАЛЬНО ОБЩАЙСЯ ЭЭЭЭЭЭЭЭЭ')
         time.sleep(1.5)
-        continue
+        continue'''
