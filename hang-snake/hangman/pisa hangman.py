@@ -1,4 +1,5 @@
 from random import choice
+
 plate = (
     """
             +
@@ -44,11 +45,8 @@ plate = (
 mistakes = len(plate)
 words = ('машина', 'слон', 'мегафакультет', 'баратрум', 'контейнер', 'пылесос', 'капибара', 'снитч')
 word = choice(words)
-wordlist = list(word)
 print(word)
-word1 = []
-for i in range(len(word)):
-    word1.append('-')
+word1 = '-' * len(word)
 wrong = 0
 while mistakes != 0 and word1 != word:
     letter = input('Дай мне букву: ')
@@ -70,4 +68,5 @@ while mistakes != 0 and word1 != word:
         break
     else:
         print(plate[wrong])
-print('ну лан')
+if mistakes != 0:
+    print('ну лан')
