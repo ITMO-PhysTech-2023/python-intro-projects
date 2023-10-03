@@ -7,12 +7,12 @@ def create_secret():
 
 word = create_secret()
 number_of_errors = 0 #кол-во ошибок сделанных игроком
-maximum_erorrs = 10 #максимальное количество ошибок
+MAX_ERRORS = 10 #максимальное количество ошибок
 n = len(word)
 guessed = ['_' for _ in range(n)] #угаданные
 print(''.join(guessed))
 
-while guessed != word and number_of_errors < maximum_erorrs:
+while guessed != word and number_of_errors < MAX_ERRORS:
     clear_terminal()
     print('Enter your guess: ')  # make a move!
     letter = input()  # игрок вводит букву
@@ -32,7 +32,7 @@ while guessed != word and number_of_errors < maximum_erorrs:
         print(''.join(guessed))
         print(FIELD[number_of_errors])
 
-if number_of_errors == maximum_erorrs:
+if number_of_errors == MAX_ERRORS:
     print(FIELD[number_of_errors])
     print("Game over")
 else:
