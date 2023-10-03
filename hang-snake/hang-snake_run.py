@@ -118,7 +118,7 @@ def printField():
                 print(lettersField.get((i,j), '_'), end=' ')
         print()
     FIELD = fieldHang(TRIES)
-    print("\n x: ", *already_named)
+    print("\nx: ", *already_named)
     print(*WORD)
 
     print(FIELD)
@@ -155,6 +155,7 @@ def scrawl():
             return 0
         if len(letWord)==0:
             print("You win")
+            stop = True
             return 0
 
 
