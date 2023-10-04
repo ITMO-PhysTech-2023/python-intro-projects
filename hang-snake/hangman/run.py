@@ -50,7 +50,7 @@ class Field:
 
 
 class HangmanGame:
-    def __init__(self, letter_provider: LetterProvider, step_sleep: int):
+    def __init__(self, letter_provider: LetterProvider, step_sleep: float):
         self.field = Field()
         self.step_sleep = step_sleep
         self.provider = letter_provider
