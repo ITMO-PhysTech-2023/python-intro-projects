@@ -1,12 +1,12 @@
-import os
-import time
-from pynput import keyboard
-from random import randint
+from snakeclasses import GameSnake
 
+
+game = GameSnake()
+game.Run()
+'''
 WIDTH, HEIGHT = 10, 10
 # можно приделать конфиг-файл с параметрами
 direction = (1, 0)
-
 
 def random_position():
     a, b = randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
@@ -42,9 +42,6 @@ with keyboard.Listener(on_press=process_press) as listener:
 
         FIELD = [['.' for i in range(WIDTH)] for i in range(HEIGHT)]
 
-        while apple in snake:  # проверка съедания
-            apple = random_position()
-
         for elem in snake:  # обновляем змею
             if snake_tail > 0:
                 FIELD[elem[0] % WIDTH][elem[1] % HEIGHT] = 'o'
@@ -70,3 +67,4 @@ with keyboard.Listener(on_press=process_press) as listener:
             snake.insert(0, [snake[0][0] + direction[0], snake[0][1] + direction[1]])
 
         time.sleep(0.5)
+'''
