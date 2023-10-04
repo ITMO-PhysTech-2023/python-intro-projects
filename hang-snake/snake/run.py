@@ -62,7 +62,19 @@ def move(snake, apple):
 
 def change_direction(new_direction):
     global direction
-    direction = new_direction
+    match new_direction:
+        case 'left':
+            if direction != 'right':
+                direction = 'left'
+        case 'right':
+            if direction != 'left':
+                direction = 'right'
+        case 'up':
+            if direction != 'down':
+                direction = 'up'
+        case 'down':
+            if direction != 'up':
+                direction = 'down'
 
 
 def random_position():
