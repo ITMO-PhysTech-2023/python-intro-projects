@@ -93,15 +93,13 @@ class HangmanGame:
         self.show()
         while True:
             self.step()
+            self.show()
             if self.is_won():
-                self.show()
                 print('Cool! You won!')
                 break
             if self.is_lost():
-                self.show()
                 print('Wow, you lost! Sad :(')
                 break
-            self.show()
 
 
 provider = RandomLetterProvider()
