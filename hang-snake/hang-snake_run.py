@@ -5,7 +5,9 @@ import threading
 import time
 import string
 from colorama import init, Fore
+
 init(autoreset=True)
+
 
 def fieldHang(a):
     f0 = r'''
@@ -75,6 +77,7 @@ def fieldHang(a):
     arr = [f0, f1, f2, f3, f4, f5, f6, f7]
     return arr[a]
 
+
 def printField():
     os.system('cls')
     arrSnake = []
@@ -84,7 +87,7 @@ def printField():
             if (i, j) in snake:
                 arr.append(f"{Fore.BLUE}0")
             else:
-                arr.append(lettersField.get((i,j), '_'))
+                arr.append(lettersField.get((i, j), '_'))
         arrSnake.append(arr)
     FIELD = fieldHang(TRIES)
     i = 0
@@ -97,12 +100,14 @@ def printField():
         arrHang.append(arr)
         i += 1
     arrHang.append(already_named)
-    arrHang.append([f"{Fore.GREEN}yes: "]+ WORD)
+    arrHang.append([f"{Fore.GREEN}yes: "] + WORD)
     for i in range(len(arrSnake)):
         print(*arrSnake[i], end='\t')
         for j in range(len(arrHang[i])):
             print(arrHang[i][j], end='')
         print()
+
+
 def create_secret():
     dict = [i for i in open("hangman/dictionary")]
     i = randint(0, len(dict))
@@ -115,7 +120,7 @@ def hangman(currentLetter):
 
         if currentLetter not in SECRET:
             TRIES -= 1
-            already_named.append(currentLetter+' ')
+            already_named.append(currentLetter + ' ')
             global letOther
             letOther.remove(currentLetter)
 
@@ -124,7 +129,8 @@ def hangman(currentLetter):
             letWord.remove(currentLetter)
             for i in range(len(SECRET) - 1):
                 if SECRET[i] == currentLetter:
-                    WORD[i] = currentLetter+" "
+                    WORD[i] = currentLetter + " "
+
 
 def spawnLetters():
     let = {}
@@ -134,22 +140,22 @@ def spawnLetters():
         while True:
             tryLetterCoor = random_position()
             if tryLetterCoor not in snake and tryLetterCoor not in let.keys():
-                tryLetter = letOther[randint(0, len(letOther)-1)]
-                if tryLetter!=firstLet:
+                tryLetter = letOther[randint(0, len(letOther) - 1)]
+                if tryLetter != firstLet:
                     let[tryLetterCoor] = tryLetter
-                    if i==0:
+                    if i == 0:
                         firstLet = tryLetter
                     break
     # буква из слова
     while True:
         tryLetterCoor = random_position()
         if tryLetterCoor not in snake and tryLetterCoor not in let.keys():
-            let[tryLetterCoor] = letWord[randint(0, len(letWord)-1)]
+            let[tryLetterCoor] = letWord[randint(0, len(letWord) - 1)]
             break
     return let
 
-def scrawl():
 
+def scrawl():
     global stop
     deleteLastCoor = True
     while stop == False:
@@ -173,20 +179,20 @@ def scrawl():
         else:
             deleteLastCoor = True
         printField()
-        if keepMoving()==False:
+        if keepMoving() == False:
             print("Game over")
             print(SECRET)
             stop = True
             return 0
-        if len(letWord)==0:
+        if len(letWord) == 0:
             print("You win")
             stop = True
             return 0
 
 
-
 def keepMoving():
-    if TRIES==0 or (len(snake)>1 and snake[0] in snake[1:]) or snake[0][0]==-1 or snake[0][1]==-1 or snake[0][0]==HEIGHT or snake[0][1]==WIDTH:
+    if TRIES == 0 or (len(snake) > 1 and snake[0] in snake[1:]) or snake[0][0] == -1 or snake[0][1] == -1 or snake[0][
+        0] == HEIGHT or snake[0][1] == WIDTH:
         return False
     return True
 
@@ -211,14 +217,13 @@ def process_press(key):
         listener.stop()
 
 
-
 WIDTH, HEIGHT = 10, 10
 stop = False
 direction = (1, 0)
 snake = [random_position()]
 SECRET = create_secret()
 letWord = [i for i in SECRET]
-letWord.pop(len(letWord)-1)
+letWord.pop(len(letWord) - 1)
 letWord = list(set(letWord))
 letOther = [i for i in string.ascii_lowercase if i not in letWord]
 
@@ -234,4 +239,3 @@ with keyboard.Listener(on_press=process_press) as listener:
     listener.join()
 
 run.join()
-
