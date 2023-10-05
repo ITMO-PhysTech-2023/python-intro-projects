@@ -2,7 +2,7 @@ from pynput import keyboard
 from random import randint
 import os
 import time
-import snake_config as config
+from snake_config import *
 import threading
 
 def terminal_size():
@@ -14,20 +14,8 @@ def clear_terminal():
     os.system(cmd)
 
 
-WIDTH, HEIGHT = config.WIDTH, config.HEIGHT
-DIRECTION = (1, 0)
-BASE_LENGTH = 4
-MAX_APPLES = 3
 
-body_symbol = '$'
-head_symbol = 'P'
-headl_symbol = '←'
-headr_symbol = '→'
-headu_symbol = '↑'
-headd_symbol = '↓'
-borderv_symbol = '|'
-borderh_symbol = '-'
-apple_symbol = '0'
+
 
 class Snake_Field:
     def __init__(self, width = WIDTH, height = HEIGHT, apples = []):
