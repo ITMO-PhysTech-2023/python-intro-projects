@@ -4,8 +4,8 @@ import os
 import threading
 import time
 import string
-mutex = threading.Lock()
-
+from colorama import init, Fore
+init(autoreset=True)
 
 def fieldHang(a):
     f0 = r'''
@@ -64,11 +64,45 @@ def fieldHang(a):
 
     _______/|\_
     '''
-    f7 = " "
+    f7 = r'''
+
+
+
+
+
+
+    '''
     arr = [f0, f1, f2, f3, f4, f5, f6, f7]
     return arr[a]
 
-
+def printField():
+    os.system('cls')
+    arrSnake = []
+    for i in range(WIDTH):
+        arr = []
+        for j in range(HEIGHT):
+            if (i, j) in snake:
+                arr.append(f"{Fore.BLUE}0")
+            else:
+                arr.append(lettersField.get((i,j), '_'))
+        arrSnake.append(arr)
+    FIELD = fieldHang(TRIES)
+    i = 0
+    arrHang = []
+    while (i < len(FIELD)):
+        arr = []
+        while (i < len(FIELD) and FIELD[i] != '\n'):
+            arr.append(FIELD[i])
+            i += 1
+        arrHang.append(arr)
+        i += 1
+    arrHang.append(already_named)
+    arrHang.append([f"{Fore.GREEN}yes: "]+ WORD)
+    for i in range(len(arrSnake)):
+        print(*arrSnake[i], end='\t')
+        for j in range(len(arrHang[i])):
+            print(arrHang[i][j], end='')
+        print()
 def create_secret():
     dict = [i for i in open("hangman/dictionary")]
     i = randint(0, len(dict))
@@ -81,7 +115,7 @@ def hangman(currentLetter):
 
         if currentLetter not in SECRET:
             TRIES -= 1
-            already_named.append(currentLetter)
+            already_named.append(currentLetter+' ')
             global letOther
             letOther.remove(currentLetter)
 
@@ -90,45 +124,36 @@ def hangman(currentLetter):
             letWord.remove(currentLetter)
             for i in range(len(SECRET) - 1):
                 if SECRET[i] == currentLetter:
-                    WORD[i] = currentLetter
+                    WORD[i] = currentLetter+" "
 
 def spawnLetters():
     let = {}
     # 2 буквы не из слова
+    firstLet = '%'
     for i in range(2):
         while True:
-            tryLetter = random_position()
-            if tryLetter not in snake and tryLetter not in let.keys():
-                let[tryLetter] = letOther[randint(0, len(letOther)-1)]
-                break
+            tryLetterCoor = random_position()
+            if tryLetterCoor not in snake and tryLetterCoor not in let.keys():
+                tryLetter = letOther[randint(0, len(letOther)-1)]
+                if tryLetter!=firstLet:
+                    let[tryLetterCoor] = tryLetter
+                    if i==0:
+                        firstLet = tryLetter
+                    break
     # буква из слова
     while True:
-        tryLetter = random_position()
-        if tryLetter not in snake and tryLetter not in let.keys():
-            let[tryLetter] = letWord[randint(0, len(letWord)-1)]
+        tryLetterCoor = random_position()
+        if tryLetterCoor not in snake and tryLetterCoor not in let.keys():
+            let[tryLetterCoor] = letWord[randint(0, len(letWord)-1)]
             break
     return let
-def printField():
-    os.system('cls')
-    for i in range(WIDTH):
-        for j in range(HEIGHT):
-            if (i, j) in snake:
-                print(0, end=' ')
-            else:
-                print(lettersField.get((i,j), '_'), end=' ')
-        print()
-    FIELD = fieldHang(TRIES)
-    print("\nx: ", *already_named)
-    print(*WORD)
-
-    print(FIELD)
 
 def scrawl():
 
     global stop
     deleteLastCoor = True
     while stop == False:
-        time.sleep(0.5)
+        time.sleep(0.4)
 
         x = snake[0][0] + direction[0]
         y = snake[0][1] + direction[1]
@@ -197,9 +222,9 @@ letWord.pop(len(letWord)-1)
 letWord = list(set(letWord))
 letOther = [i for i in string.ascii_lowercase if i not in letWord]
 
-WORD = ['_' for i in range(len(SECRET) - 1)]
+WORD = ['_ ' for i in range(len(SECRET) - 1)]
 lettersField = spawnLetters()
-already_named = []
+already_named = [f"{Fore.RED}no: "]
 TRIES = 7
 printField()
 
