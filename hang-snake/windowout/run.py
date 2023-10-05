@@ -18,7 +18,9 @@ def playhangman():
 
 
 def playcombo():
-    pass
+    global gamestatus
+    gamestatus = 3
+    canvas.destroy()
 
 
 window = Tk()
@@ -48,7 +50,7 @@ buttoncombo = Button(text='Играть в змейку + виселицу',
                            command=playcombo)
 canvas.create_window(584, 620, window=buttoncombo, tags="buttoncombo")
 canvas.create_text(584, 300,
-                   text="В разработке",
+                   text="Альфа-версия",
                    justify=CENTER, font="Verdana 14", tags="enter_text")
 # По нажатию кнопки запускаем соответствующую игру
 while gamestatus == 0:
