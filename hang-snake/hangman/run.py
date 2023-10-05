@@ -50,8 +50,8 @@ while True:
         rem_tries-=1
         if not rem_tries:
             clear_terminal()
-            print('what a loser lul go learn some english\n')
-            print('btw this is the word u needed to guess:\n' + SECRET)
+            print('learn some english\n')
+            print('the word you needed to guess:\n' + SECRET)
             time.sleep(3)
             sys.exit()
     clear_terminal()
