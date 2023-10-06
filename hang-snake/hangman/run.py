@@ -1,33 +1,23 @@
-from common.util import clear_terminal
-
-
-def create_secret():
-    return 'capybara'
-
-
-SECRET = create_secret()
-n = len(SECRET)
-
-FINAL_FIELD = r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-  / \   |
-_______/|\_
-'''
+from common.util import clear_terminal, HANGMAN_FIELDS
+from common.hangman import Hangman
+from common.words import choice_word
 
 # здесь мы наверное хотим иметь исходное поле
 # и понимание, как оно меняется после каждого хода
-FIELD = FINAL_FIELD
+FIELD = HANGMAN_FIELDS[0]
 
+hg = Hangman(choice_word())
 while True:
     # make a move!
-    letter = input('Enter your guess: ')
-    if ...:
-        FIELD = ...  # если не угадали, то надо обновить поле
-    else:
-        ...  # мало ли, понадобится...
-
+    letter = input('Enter your guess: ')[0]
+    if not hg.guess(letter):
+        FIELD = HANGMAN_FIELDS[hg.fails]
+    if hg.fails == len(HANGMAN_FIELDS)-1:
+        exit(1)
     clear_terminal()
     print(FIELD)
+    print("Word", hg.get_partial_word())
+    # TODO:
+    if hg.get_partial_word() == hg.word:
+        print("you won!!1!")
+        exit(0)
