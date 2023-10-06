@@ -71,7 +71,7 @@ class SnakeGame:
 
     """
     Function, that called before apple was eaten.
-    Takes snake game and apple char as arguments and returns nothing.
+    Takes apple char as arguments and returns nothing.
     """
     before_eat_apple = lambda _,apple: 0
 
