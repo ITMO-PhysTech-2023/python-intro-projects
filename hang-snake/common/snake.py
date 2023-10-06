@@ -85,9 +85,18 @@ class SnakeGame:
     direction = (1, 0)
 
     def __init__(self, apples: list[str] = ['*']*5, is_apples_finite = False):
-        self.apples = list(map(lambda x: [random_position(), x], apples))
+        #self.apples = list(map(lambda x: [random_position(), x], apples))
+        self.apples = []
+        self.append_apples(apples)
         self.is_apples_finite = is_apples_finite
         self.direction = List2([1, 0])
+    
+    def append_apples(self, apples: list[str]):
+        for a in apples:
+            t = random_position()
+            while find_idx(lambda x: x[0] == t, self.apples) != -1:
+                t = random_position()
+            self.apples.append([t, a])
 
     def on_key_press(self):
         return lambda o: on_key_press(o, id(self.direction))
