@@ -6,10 +6,6 @@ import ctypes
 
 WIDTH, HEIGHT = 15, 15
 
-# TODO: ?
-class List2(list):
-    pass
-
 def random_position():
     return [randint(0, HEIGHT - 1), randint(0, WIDTH - 1)]
 
@@ -90,7 +86,7 @@ class SnakeGame:
         self.apples = []
         self.append_apples(apples)
         self.is_apples_finite = is_apples_finite
-        self.direction = List2([1, 0])
+        self.direction = [1, 0]
     
     def append_apples(self, apples: list[str]):
         for a in apples:
