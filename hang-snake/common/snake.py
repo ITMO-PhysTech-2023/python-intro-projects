@@ -50,7 +50,8 @@ def find_idx(predict, lst):
 def on_key_press(key, ptr):
     # SAFETY: this function does not reallocates or frees value of pointer
     # caller must verify that `ptr` is valid pointer to py_object
-    drfn = ctypes.cast(ptr, ctypes.py_object).value
+    #drfn = ctypes.cast(ptr, ctypes.py_object).value
+    drfn = ptr
     match key:
         case keyboard.Key.left:
             drfn[0] = -1
@@ -99,7 +100,7 @@ class SnakeGame:
             self.apples.append([t, a])
 
     def on_key_press(self):
-        return lambda o: on_key_press(o, id(self.direction))
+        return lambda o: on_key_press(o, self.direction)
 
     def draw_screen(self):
         def is_apple(o):
