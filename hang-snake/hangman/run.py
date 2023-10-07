@@ -1,7 +1,8 @@
 import time
 
+from common.printer import DefaultPrinter, Printer, ReversePrinter
 from common.util import clear_terminal
-from hangman.provider import LetterProvider, RandomLetterProvider
+from hangman.provider import KeyboardLetterProvider, LetterProvider, RandomLetterProvider
 
 
 def create_secret():
@@ -50,10 +51,15 @@ class Field:
 
 
 class HangmanGame:
-    def __init__(self, letter_provider: LetterProvider, step_sleep: float):
+    def __init__(
+            self,
+            letter_provider: LetterProvider, step_sleep: float,
+            printer: Printer
+    ):
         self.field = Field()
         self.step_sleep = step_sleep
         self.provider = letter_provider
+        self.printer = printer
         self.secret = create_secret()
         self.guessed = ['_' for _ in range(len(self.secret))]
 
@@ -86,8 +92,13 @@ class HangmanGame:
 
     def show(self):
         clear_terminal()
-        self.field.print()
-        print(''.join(self.guessed))
+        # self.field.print()
+        # print(''.join(self.guessed))
+        out = self.field.matrix + [
+            [],
+            self.guessed
+        ]
+        self.printer.print_field(out)
 
     def run(self):
         self.show()
@@ -102,6 +113,9 @@ class HangmanGame:
                 break
 
 
-provider = RandomLetterProvider()
-game = HangmanGame(provider, 1)
-game.run()
+if __name__ == '__main__':
+    provider = RandomLetterProvider()
+    printer = DefaultPrinter()
+    # printer = ReversePrinter()
+    game = HangmanGame(provider, 0.5, printer)
+    game.run()

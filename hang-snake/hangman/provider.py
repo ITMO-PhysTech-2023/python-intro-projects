@@ -1,7 +1,9 @@
 import random
+from abc import ABC, abstractmethod
 
 
-class LetterProvider:
+class LetterProvider(ABC):
+    @abstractmethod
     def get_next_letter(self) -> str:
         pass
 

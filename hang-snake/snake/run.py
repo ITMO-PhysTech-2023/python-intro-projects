@@ -3,6 +3,7 @@ import time
 
 from pynput import keyboard
 
+from common.printer import DefaultPrinter, Printer
 from common.util import clear_terminal, terminal_size
 
 
@@ -82,7 +83,7 @@ class Field:
     def is_filled(self):
         return self.height * self.width == len(self.snake)
 
-    def print(self):
+    def build(self):
         matrix = [
             [Field.NEUTRAL for _ in range(self.width)]
             for _2 in range(self.height)
@@ -91,15 +92,19 @@ class Field:
         for item in self.objects.values():
             row, col = item.position
             matrix[row][col] = item.display
-        for row in matrix:
-            print(''.join(row))
+        return matrix
 
 
 class SnakeGame:
-    def __init__(self, height: int, width: int, step_sleep: float):
+    def __init__(
+            self, height: int, width: int,
+            step_sleep: float,
+            printer: Printer
+    ):
         self.field = Field(height, width)
         self.direction = (1, 0)
         self.step_sleep = step_sleep
+        self.printer = printer
 
     @staticmethod
     def opposite_directions(d1: tuple[int, int], d2: tuple[int, int]):
@@ -125,7 +130,8 @@ class SnakeGame:
         with keyboard.Listener(on_press=self.process_press):
             while True:
                 clear_terminal()
-                self.field.print()
+                matrix = self.field.build()
+                self.printer.print_field(matrix)
                 self.step()
 
                 if self.field.snake.has_collision():
@@ -136,7 +142,9 @@ class SnakeGame:
                     break
 
 
-# width, height = terminal_size()
-width, height = 10, 10
-game = SnakeGame(height, width, 0.1)
-game.run()
+if __name__ == '__main__':
+    # width, height = terminal_size()
+    width, height = 10, 10
+    printer = DefaultPrinter()
+    game = SnakeGame(height, width, 0.1, printer)
+    game.run()

@@ -8,3 +8,5 @@ def terminal_size():
 def clear_terminal():
     cmd = 'cls' if os.name == 'nt' else 'clear'
     os.system(cmd)
+    # w, h = terminal_size()
+    # print('\b' * (w * h))
