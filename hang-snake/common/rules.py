@@ -1,4 +1,4 @@
-first_message = (' TRY TO COLLECT THREE APPLES \n ENTER 1 TO START')
+first_message = (' TRY TO COLLECT THREE APPLES! ENTER 1 TO START\n СОБЕРИ 3 ЯБЛОКА! ВВЕДИТЕ 1, ЧТОБЫ НАЧАТЬ')
 
 wrong_input = ('You have entered an incorrect message')
 
@@ -14,4 +14,4 @@ rules = ('RULES OF THE GAME\n 1. 5 letters will appear on the screen. You can co
          ' буква появится в слове\n 4. после каждого выбора букв вы будете видеть, как близко человечек к смерти\n'
          '5. постарайтесь не убить своего подопечного и угадать слово.\n Удачи)\n\n'
          
-         'IF YOU UNDERSTAND EVERYTHING, PRESS 1\ЕСЛИ ВЫ ВСЕ ПОНЯЛИ, НАЖМИТЕ 1')
+         'IF YOU UNDERSTAND EVERYTHING, ENTER 1\ЕСЛИ ВЫ ВСЕ ПОНЯЛИ, ВВЕДИТЕ 1')

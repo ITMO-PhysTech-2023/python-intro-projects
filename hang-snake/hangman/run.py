@@ -1,11 +1,8 @@
 from common.util import clear_terminal
 import time
-
+from common.providers import create_secret
 from common.providers import LetterProvider, RandomLetterProvider
 
-
-def create_secret():
-    return 'capybara'
 
 
 class Hangmangame:
