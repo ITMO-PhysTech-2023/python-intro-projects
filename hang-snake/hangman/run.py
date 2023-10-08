@@ -1,7 +1,7 @@
 from common.util import clear_terminal
 import time
 
-from common.run import LetterProvider, RandomLetterProvider
+from common.providers import LetterProvider, RandomLetterProvider
 
 
 def create_secret():
@@ -9,7 +9,7 @@ def create_secret():
 
 
 class Hangmangame:
-    def __init__(self, letter_provider: LetterProvider, step_sleep: int):
+    def __init__(self, letter_provider: LetterProvider, step_sleep: float):
         self.word = create_secret()
         self.n = len(self.word)
         self.guessed = ['_' for _ in range(self.n)]
