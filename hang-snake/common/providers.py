@@ -18,3 +18,11 @@ class HangmanLetterProvider(LetterProvider):
 
 def create_secret():
     return 'cat'
+
+
+class SnakeLetterProvider(LetterProvider):
+    def __init__(self, letter):
+        self.letter = letter
+
+    def get_next_letter(self):
+        return chr(self.letter)

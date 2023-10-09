@@ -1,8 +1,7 @@
 from common.util import clear_terminal
 import time
 from common.providers import create_secret
-from common.providers import LetterProvider, RandomLetterProvider
-
+from common.providers import LetterProvider
 
 
 class Hangmangame:
@@ -11,7 +10,7 @@ class Hangmangame:
         self.n = len(self.word)
         self.guessed = ['_' for _ in range(self.n)]
         self.provider = letter_provider
-        from FIELD import FIELD
+        from hangman.FIELD import FIELD
         self.field = FIELD
         self.step_sleep = step_sleep
         self.number_of_errors = 0
@@ -19,7 +18,7 @@ class Hangmangame:
 
     def read_guess(self) -> str:
         while True:
-            letter = self.provider.get_next_letter().lower()
+            letter = self.provider.get_next_letter()
             if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
                 print('Invalid guess! Try again (enter a letter)')
                 continue
@@ -74,8 +73,3 @@ class Hangmangame:
                 print("Game over")
                 break
             self.show()
-
-
-provider = RandomLetterProvider()
-game = Hangmangame(provider, 1)
-game.run()

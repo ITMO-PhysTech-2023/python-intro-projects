@@ -7,7 +7,8 @@ from common.rules import first_message, wrong_input, rules
 
 
 class Snakegame:
-    def __init__(self, letter_provider1: LetterProvider, letter_provider2: LetterProvider):
+    def __init__(self, letter_provider1: LetterProvider,
+                 letter_provider2: LetterProvider):
         self.WIDTH = 30
         self.HEIGHT = 15
         self.eat = False
@@ -39,12 +40,13 @@ class Snakegame:
             self.eat = True
             self.hangman_apple = []
             self.letters_eaten.append(self.hangman_letter_on_field)
+            self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
         for i in range(4):
             if self.apples[i] == self.snake[0]:
-                self.apples[i] = self.random_position()
                 self.eat = True
                 self.letters_counter += 1
                 self.letters_eaten.append(self.letters_on_field[i])
+                self.apples[i] = self.random_position()
 
     def create_field_matrix(self):
         matrix = []
@@ -76,8 +78,22 @@ class Snakegame:
         else:
             self.eat = False
 
-    def make_move(self):
-        return self.letters_counter == 3
+    def update_letters(self):
+        self.letters_counter = 0
+        for i in range(4):
+            self.letters_on_field[i] = self.provider_random.get_next_letter()
+        self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
+        self.hangman_apple = self.random_position()
+
+    def choose_letter(self):
+        print('Eaten letters: ', ', '.join(self.letters_eaten))
+        print('Enter the number of the letter you selected')
+        chosen_letter = int(input())
+        if chosen_letter <= 3:
+            chosen_letter = self.letters_eaten[chosen_letter]
+            return chosen_letter
+        else:
+            print(wrong_input)
 
     def process_press(self, key):
         match key:
@@ -97,6 +113,13 @@ class Snakegame:
                 self.snake[0][1] in (0, self.HEIGHT) or\
                 self.snake[0] in self.snake[1:] or self.flag_end
 
+    def start_rules(self):
+        print(rules)
+        resume = int(input())
+        self.apples.pop()
+        self.letters_eaten = []
+        return resume
+
     def run(self):
         with keyboard.Listener(on_press=self.process_press):
             print(first_message)
@@ -111,31 +134,15 @@ class Snakegame:
                         os.system('cls')
                         print('Game Over')
                         break
-                    elif self.make_move():
-                        self.letters_counter = 0
-                        for i in range(4):
-                            self.letters_on_field[i] = self.provider_random.get_next_letter().lower()
-                        self.hangman_letter_on_field = self.provider_hangman.get_next_letter().lower()
-                        self.hangman_apple = self.random_position()
-
+                    elif self.letters_counter == 3:
+                        self.update_letters()
                         if self.letters_eaten == ['a', 'a', 'a']:
-                            print(rules)
-                            resume = int(input())
-                            self.apples.pop()
-                            self.letters_eaten = []
-                            if resume == 1:
+                            if self.start_rules() == 1:
                                 continue
                             else:
                                 print(wrong_input)
                         else:
-                            print('Eaten letters: ', ', '.join(self.letters_eaten))
-                            print('Enter the number of the letter you selected')
-                            chosen_letter = int(input())
-                            if chosen_letter <= 3:
-                                a = int(input())
-                            else:
-                                print(wrong_input)
-
+                            self.choose_letter()
                     time.sleep(0.3)
             else:
                 print(wrong_input)
