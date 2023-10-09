@@ -1,7 +1,9 @@
 import copy
+import os
 import time
 from pynput import keyboard
 from random import randint
+from os import system
 
 
 class SnakeGame:
@@ -94,5 +96,5 @@ class SnakeGame:
                 time.sleep(self.SLEEP_STEP)
 
 
-s_game = SnakeGame(30, 30, 0.1)
+s_game = SnakeGame(25, 25, 0.1)
 s_game.run()

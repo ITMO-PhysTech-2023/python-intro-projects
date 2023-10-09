@@ -1,149 +1,172 @@
 import os
 from random import *
 
-# Генератор слова:
-
-russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь', 'обезьяна', 'ягуар',
-                 'анаконда']
-english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion', 'chicken', 'jaguar',
-                 'chameleon']
-
 
 def create_secret(a: list):
     return a[randint(0, len(a))]
 
 
-# Выбор языка:
-while True:
-    language = input('Select language/Выберите язык (Eng/Rus): ')
-    if language == 'Eng':
-        SECRET = create_secret(english_words)
-        letter_choosing = 'Enter your letter: '
-        invalid_letter = 'Invalid input! Try again'
-        wrong_letter = "This letter isn't in the word"
-        losing = 'GAME OVER!'
-        winning = 'You won! Congratulations!'
+class HangmanGame:
+    def __init__(self):
+        self.FIELDS = [
+            r'''
+               +----+
+                    |
+                    |
+                    |
+                    |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+                    |
+                    |
+                    |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+               o    |
+                    |
+                    |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+               o    |
+               |    |
+                    |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+               o    |
+               |\   |
+                    |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+               o    |
+              /|\   |
+                    |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+               o    |
+              /|\   |
+              /     |
+            _______/|\_
+            ''',
+            r'''
+               +----+
+               |    |
+               o    |
+              /|\   |
+              / \   |
+            _______/|\_
+            '''
+            ]
+        self.russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь',
+                              'обезьяна', 'ягуар', 'анаконда']
+        self.english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion',
+                              'chicken', 'jaguar', 'chameleon']
+        self.SECRET = ''
+        self.letter_choosing = ''
+        self.invalid_letter = ''
+        self.wrong_letter = ''
+        self.losing = ''
+        self.winning = ''
+        self.secret_letters = []
+        self.turn_number = 0
+        self.your_letters = []
+        self.letter = ''
+        self.language = ''
+        self.again = ''
 
-        break
-    elif language == 'Rus':
-        SECRET = create_secret(russian_words)
-        letter_choosing = 'Введите букву: '
-        invalid_letter = 'Некорректный ввод. Попробуйте еще раз'
-        wrong_letter = 'Этой буквы нет в слове'
-        losing = 'ПОТРАЧЕНО.'
-        winning = 'Победа!'
+# Назначает переменные интерфейса для каждого языка
+    def chose_language(self):
+        while True:
+            self.language = input('Select language/Выберите язык (Eng/Rus): ')
+            if self.language == 'Eng':
+                self.SECRET = create_secret(self.english_words)
+                self.letter_choosing = 'Enter your letter: '
+                self.invalid_letter = 'Invalid input! Try again'
+                self.wrong_letter = "This letter isn't in the word"
+                self.losing = 'GAME OVER!'
+                self.winning = 'You won! Congratulations!'
+                break
+            elif self.language == 'Rus':
+                self.SECRET = create_secret(self.russian_words)
+                self.letter_choosing = 'Введите букву: '
+                self.invalid_letter = 'Некорректный ввод. Попробуйте еще раз'
+                self.wrong_letter = 'Этой буквы нет в слове'
+                self.losing = 'ПОТРАЧЕНО.'
+                self.winning = 'Победа!'
+                break
+            else:
+                print('Invalid input! Try again/Некорректный ввод. Попробуйте еще раз')
 
-        break
-    else:
-        print('Invalid input! Try again/Некорректный ввод. Попробуйте еще раз')
+# принимает букву и чекает ее корректность
+    def check_correct(self) -> bool:
+        return (len(self.letter)) != 1 or \
+                (self.language == 'Eng' and (ord(self.letter) < ord('a') or ord(self.letter) > ord('z'))) or \
+                (self.language == 'Rus' and (ord(self.letter) < ord('а') or ord(self.letter) > ord('я')))
+
+# чекает правильность хода
+    def chek_true(self):
+        if self.letter in self.SECRET:
+            for i in range(len(self.SECRET)):
+                if self.SECRET[i] == self.letter:
+                    self.secret_letters[i] = self.letter
+        else:
+            self.your_letters.append(self.letter)
+            print(self.wrong_letter)
+            self.turn_number += 1
+
+# чекает, не проиграл ли игрок
+    def check_lost(self) -> bool:
+        return self.turn_number == len(self.FIELDS) - 1
+
+# чекает, не выиграл ли игрок
+    def check_won(self) -> bool:
+        return ''.join(self.secret_letters) == self.SECRET
+
+# печатает всякое
+    def print_everything(self):
+        print(''.join(self.secret_letters))
+        print(self.FIELDS[self.turn_number])
+        print(', '.join(set(self.your_letters)))
+
+# собственно, запускает игру
+    def run(self):
+        self.chose_language()
+        self.secret_letters = ['_'] * len(self.SECRET)
+        while True:
+            os.system('cls')
+            self.print_everything()
+            self.letter = input(self.letter_choosing).lower()
+            if self.check_correct():
+                print(self.invalid_letter)
+                self.letter = ''
+                continue
+            self.chek_true()
+            if self.check_lost():
+                print(self.FIELDS[self.turn_number])
+                print(self.losing)
+                break
+            if self.check_won():
+                print(self.winning)
+                print(self.SECRET.upper())
+                break
 
 
-secret_letters = ['_'] * len(SECRET)
-
-FIELDS = [
-    r'''
-       +----+
-            |
-            |
-            |
-            |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-            |
-            |
-            |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-       o    |
-            |
-            |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-       o    |
-       |    |
-            |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-       o    |
-       |\   |
-            |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-       o    |
-      /|\   |
-            |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-       o    |
-      /|\   |
-      /     |
-    _______/|\_
-    ''',
-    r'''
-       +----+
-       |    |
-       o    |
-      /|\   |
-      / \   |
-    _______/|\_
-    '''
-    ]
-your_letters = []
-turn_number = 0
-while True:
-    os.system('cls')
-    '''
-    1. Вывести поле + вывести все известные буквы
-    2. Запрашиваем ход
-    3. Проверяем корректность хода
-    4. Проверяем успешность хода
-    5. Проверяем, наступил ли выигрыш или проигрыш
-    '''
-
-    # 1
-    print(''.join(secret_letters))
-    print(FIELDS[turn_number])
-    print(', '.join(set(your_letters)))
-    # 2
-    letter = input(letter_choosing).lower()
-    your_letters.append(letter)
-    # 3
-    if (len(letter)) != 1 or (language == 'Eng' and (ord(letter) < ord('a') or ord(letter) > ord('z'))) or \
-            (language == 'Rus' and (ord(letter) < ord('а') or ord(letter) > ord('я'))):
-        print(invalid_letter)
-        continue
-    # 4
-    if letter in SECRET:
-        for i in range(len(SECRET)):
-            if SECRET[i] == letter:
-                secret_letters[i] = letter
-    else:
-        print(wrong_letter)
-        turn_number += 1
-    # 5
-    if turn_number == len(FIELDS) - 1:
-        print(FIELDS[turn_number])
-        print(losing)
-        break
-    if ''.join(secret_letters) == SECRET:
-        print(winning)
-        print(SECRET.upper())
-        break
+h_game = HangmanGame()
+h_game.run()
