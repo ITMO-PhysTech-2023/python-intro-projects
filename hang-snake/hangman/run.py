@@ -1,4 +1,4 @@
-from common.util import clear_terminal
+import os
 from random import *
 
 # Генератор слова:
@@ -9,19 +9,15 @@ english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monk
                  'chameleon']
 
 
-def create_secret_eng():
-    return english_words[randint(0, len(english_words))]
-
-
-def create_secret_rus():
-    return russian_words[randint(0, len(russian_words))]
+def create_secret(a: list):
+    return a[randint(0, len(a))]
 
 
 # Выбор языка:
 while True:
     language = input('Select language/Выберите язык (Eng/Rus): ')
     if language == 'Eng':
-        SECRET = create_secret_eng()
+        SECRET = create_secret(english_words)
         letter_choosing = 'Enter your letter: '
         invalid_letter = 'Invalid input! Try again'
         wrong_letter = "This letter isn't in the word"
@@ -30,7 +26,7 @@ while True:
 
         break
     elif language == 'Rus':
-        SECRET = create_secret_rus()
+        SECRET = create_secret(russian_words)
         letter_choosing = 'Введите букву: '
         invalid_letter = 'Некорректный ввод. Попробуйте еще раз'
         wrong_letter = 'Этой буквы нет в слове'
@@ -110,9 +106,10 @@ FIELDS = [
     _______/|\_
     '''
     ]
-
+your_letters = []
 turn_number = 0
 while True:
+    os.system('cls')
     '''
     1. Вывести поле + вывести все известные буквы
     2. Запрашиваем ход
@@ -122,17 +119,15 @@ while True:
     '''
 
     # 1
-    clear_terminal()
     print(''.join(secret_letters))
     print(FIELDS[turn_number])
-
+    print(', '.join(set(your_letters)))
     # 2
     letter = input(letter_choosing).lower()
-
+    your_letters.append(letter)
     # 3
     if (len(letter)) != 1 or (language == 'Eng' and (ord(letter) < ord('a') or ord(letter) > ord('z'))) or \
             (language == 'Rus' and (ord(letter) < ord('а') or ord(letter) > ord('я'))):
-
         print(invalid_letter)
         continue
     # 4
@@ -143,7 +138,6 @@ while True:
     else:
         print(wrong_letter)
         turn_number += 1
-
     # 5
     if turn_number == len(FIELDS) - 1:
         print(FIELDS[turn_number])
