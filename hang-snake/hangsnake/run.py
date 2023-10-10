@@ -7,7 +7,7 @@ from windowout.run import window, gamestatus
 WIDTH = 700
 HEIGHT = 420
 OBJ_SIDE = 35
-GAME_SPEED = 60
+GAME_SPEED = 100
 direction = 'right'
 mistakes = 0
 
@@ -40,7 +40,7 @@ class Apple:
         self.letter = random.choice(string.ascii_lowercase)
         canvas.create_rectangle(self.x, self.y, self.x + OBJ_SIDE, self.y + OBJ_SIDE, fill="red", tags="apple")
         canvas.create_text(self.x + OBJ_SIDE/2, self.y + OBJ_SIDE/2, text=self.letter,
-                               justify=CENTER, font="Verdana 14", fill="black")
+                               justify=CENTER, font="Verdana 14", fill="black", tags="appletext")
 
 
 class Hangsnakegame:  # Переписано под ООП
@@ -48,7 +48,8 @@ class Hangsnakegame:  # Переписано под ООП
         pass
 
     @staticmethod
-    def move(snake, apple):
+    def move(snake, apples):
+        eaten = False
         Hangsnakegame.hang()
         x, y = snake.coords[0]
         if direction == 'left':
@@ -62,18 +63,27 @@ class Hangsnakegame:  # Переписано под ООП
         snake.coords.insert(0, (x, y))
         part = canvas.create_rectangle(x, y, x + OBJ_SIDE, y + OBJ_SIDE, fill="green")
         snake.parts.insert(0, part)
-        if x == apple.coords[0] and y == apple.coords[1]:
-            canvas.delete("apple")
-            Hangsnakegame.hangmanmove(apple.letter)
-            apple = Apple()
-        else:
+        for apple in apples:
+            if x == apple.coords[0] and y == apple.coords[1]:
+                apples.remove(apple)
+                Hangsnakegame.hangmanmove(apple.letter)
+                apples.append(Apple())
+                eaten = True
+        if not eaten:
             del snake.coords[-1]
             canvas.delete(snake.parts[-1])
             del snake.parts[-1]
+        canvas.delete("apple")
+        canvas.delete("appletext")
+        for apple in apples:
+            canvas.create_rectangle(apple.x, apple.y, apple.x + OBJ_SIDE, apple.y + OBJ_SIDE, fill="red", tags="apple")
+            canvas.create_text(apple.x + OBJ_SIDE / 2, apple.y + OBJ_SIDE / 2, text=apple.letter,
+                               justify=CENTER, font="Verdana 14", fill="black", tags="appletext")
+
         if Hangsnakegame.check_collisions():
             Hangsnakegame.game_over()
         else:
-            window.after(GAME_SPEED, Hangsnakegame.move, snake, apple)
+            window.after(GAME_SPEED, Hangsnakegame.move, snake, apples)
 
     @staticmethod
     def change_direction(new_direction):
@@ -158,7 +168,7 @@ class Hangsnakegame:  # Переписано под ООП
 
     @staticmethod
     def run():
-        Hangsnakegame.move(snake, apple)
+        Hangsnakegame.move(snake, apples)
         canvas.pack()  # Отрисовка поверх окна
         canvashang.pack()
 
@@ -199,7 +209,7 @@ def random_position():
 canvas = Canvas(window, bg="black", height=HEIGHT, width=WIDTH)
 canvashang = Canvas(window, bg="white", height=280, width=WIDTH)
 snake = Snake()
-apple = Apple()
+apples = [Apple(), Apple(), Apple()]
 game = Hangsnakegame()
 
 if gamestatus == 3:
