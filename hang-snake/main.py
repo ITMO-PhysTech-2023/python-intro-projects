@@ -3,10 +3,11 @@ from random import randint
 from pynput import keyboard
 from os import system
 from time import sleep
+from rules import rus_rules, eng_rules
 
 
 def create_secret(a: list):
-    return a[randint(0, len(a))]
+    return a[randint(0, len(a) - 1)]
 
 
 class MainGame:
@@ -81,9 +82,10 @@ class MainGame:
         '''
     ]
 
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, number_of_letters: int):
         self.SNAKE_WIDTH = width
         self.SNAKE_HEIGHT = height
+        self.number_of_letters = number_of_letters
         self.SNAKE_SCREEN = list()
         self.snake_direction = (-1, 0)
         self.snake_pause = False
@@ -107,12 +109,11 @@ class MainGame:
         self.game_continue = ''
         self.snake_won = ''
         self.exit = ''
+        self.rules = ''
+        self.tried_letters = ''
         self.you_collected_letters = ''
-        self.letters_on_field = [self.random_letter(), self.random_letter(), self.random_letter(),
-                                 self.random_letter(), self.random_letter()]
-        self.letters_positions = [self.snake_random_position(), self.snake_random_position(),
-                                  self.snake_random_position(), self.snake_random_position(),
-                                  self.snake_random_position()]
+        self.letters_on_field = []
+        self.letters_positions = []
         self.letter_for_turn = ''
 
 # обработка нажатия клавиш для змейки DONE
@@ -151,6 +152,8 @@ class MainGame:
                 self.game_continue = 'Press Enter to continue'
                 self.snake_won = 'Wow! \nYou finished snake...\nSo, you win)'
                 self.exit = 'Press Enter to exit'
+                self.tried_letters = 'You tried '
+                self.rules = eng_rules
                 break
             elif self.language == 'Рус':
                 self.HANG_SECRET = create_secret(self.hang_russian_words)
@@ -168,6 +171,8 @@ class MainGame:
                 self.game_continue = 'Чтобы продолжить, нажминет Enter'
                 self.snake_won = 'ВОУ! \nТы победил в змейке, а значит, победил и во всей игре)'
                 self.exit = 'Для выхода нажмите Enter'
+                self.tried_letters = 'Вы уже пробовали буквы '
+                self.rules = rus_rules
                 break
             else:
                 print('Invalid input! Try again/Некорректный ввод. Попробуйте еще раз')
@@ -181,19 +186,22 @@ class MainGame:
 
 # возвращает список из трех рандомных букв DONE
     def field_letters_generation(self):
-        self.letters_on_field = [self.random_letter(), self.random_letter(), self.random_letter(),
-                                 self.random_letter(), self.random_letter()]
-
-# возвращает список из трех позиций букв на поле DONE
-    def letters_positions_generation(self):
-        for i in range(len(self.letters_positions)):
-            while self.letters_positions[i] == self.snake_apple or self.letters_positions[i] in self.snake or \
-                    self.letters_positions.count(self.letters_positions[i]) > 1:
-                self.letters_positions[i] = self.snake_random_position()
+        self.letters_on_field = [self.random_letter()] * self.number_of_letters
+        for i in range(len(self.letters_on_field)):
+            while self.letters_on_field.count(self.letters_on_field[i]) > 1:
+                self.letters_on_field[i] = self.random_letter()
 
 # генерация рандомного положения объекта на поле змейки DONE
     def snake_random_position(self):
         return [randint(1, self.SNAKE_HEIGHT - 2), randint(1, self.SNAKE_WIDTH - 2)]
+
+# возвращает список из трех позиций букв на поле DONE
+    def letters_positions_generation(self):
+        self.letters_positions = [self.snake_random_position()] * self.number_of_letters
+        for i in range(len(self.letters_positions)):
+            while self.letters_positions[i] == self.snake_apple or self.letters_positions[i] in self.snake or \
+                    self.letters_positions.count(self.letters_positions[i]) > 1:
+                self.letters_positions[i] = self.snake_random_position()
 
 # создание поля змейки DONE
     def snake_make_field(self):
@@ -246,6 +254,7 @@ class MainGame:
             field += ('  '.join(k) + '\n')
         print('\n' * 5)
         print(''.join(self.hang_secret_letters))
+        print(', '.join(set(self.hang_trying_letters)))
         print(field)
 
 # чекает правильность хода в висилице DONE
@@ -288,11 +297,13 @@ class MainGame:
     def hang_print_everything(self):
         print(''.join(self.hang_secret_letters))
         print(self.HANG_FIELDS[self.hang_turn_number])
-        print(', '.join(set(self.hang_trying_letters)))
+        print(self.tried_letters + ', '.join(set(self.hang_trying_letters)))
 
 # запуск игры
     def run(self):
+        system('cls')
         self.choosing_language()
+        input(self.rules)
         self.field_letters_generation()
         self.snake_make_field()
         self.hang_secret_letters = ['_'] * len(self.HANG_SECRET)
@@ -301,6 +312,9 @@ class MainGame:
                 if self.snake_pause:
                     continue
                 self.snake_move()
+                if self.check_lost():
+                    self.lost()
+                    break
                 self.snake_print_everything()
                 if self.letter_for_turn != '':
                     system('cls')
@@ -309,9 +323,6 @@ class MainGame:
                     self.hang_chek_true()
                     self.letter_for_turn = ''
                     input(self.game_continue)
-                if self.check_lost():
-                    self.lost()
-                    break
                 if self.check_won():
                     self.won()
                     break
@@ -321,5 +332,7 @@ class MainGame:
                     sleep(0.25 - 55 * 0.003)
 
 
-game = MainGame(25, 25)
-game.run()
+if __name__ == '__main__':
+    game = MainGame(25, 25, 5)
+    game.run()
+
