@@ -26,11 +26,12 @@ class Snakegame:
 
         self.direction = (1, 0)
         self.letters_counter = 0
+        self.index_letter = None
+        self.chosen_letter = None
 
     def random_position(self):
         while True:
-            x = randint(2, self.WIDTH-2)
-            y = randint(2, self.HEIGHT-2)
+            x, y = randint(2, self.WIDTH-2), randint(2, self.HEIGHT-2)
             if (x, y) not in self.snake and (x, y) not in self.apples and (x, y) not in self.hangman_apple:
                 return x, y
 
@@ -86,14 +87,16 @@ class Snakegame:
         self.hangman_apple = self.random_position()
 
     def choose_letter(self):
-        print('Eaten letters: ', ', '.join(self.letters_eaten))
-        print('Enter the number of the letter you selected')
-        chosen_letter = int(input())
-        if chosen_letter <= 3:
-            chosen_letter = self.letters_eaten[chosen_letter]
-            return chosen_letter
+        self.index_letter = int(input()) - 1
+        if self.index_letter <= 2:
+            self.chosen_letter = self.letters_eaten[self.index_letter]
+            print(self.chosen_letter)
+            time.sleep(5)
         else:
             print(wrong_input)
+
+    def give_letter_to_provider(self):
+        return self.index_letter
 
     def process_press(self, key):
         match key:
@@ -117,7 +120,6 @@ class Snakegame:
         print(rules)
         resume = int(input())
         self.apples.pop()
-        self.letters_eaten = []
         return resume
 
     def run(self):
@@ -138,11 +140,17 @@ class Snakegame:
                         self.update_letters()
                         if self.letters_eaten == ['a', 'a', 'a']:
                             if self.start_rules() == 1:
+                                self.letters_eaten = []
                                 continue
                             else:
                                 print(wrong_input)
                         else:
+                            print('Eaten letters: ', ', '.join(self.letters_eaten))
+                            print('Enter the number of the letter you selected')
                             self.choose_letter()
+
+                        self.letters_eaten = []
+
                     time.sleep(0.3)
             else:
                 print(wrong_input)

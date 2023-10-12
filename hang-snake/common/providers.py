@@ -11,7 +11,7 @@ class RandomLetterProvider(LetterProvider):
         return chr(random.randint(ord('a'), ord('z')))
 
 
-class HangmanLetterProvider(LetterProvider):
+class SecretLetterProvider(LetterProvider):
     def get_next_letter(self) -> str:
         return create_secret()[random.randint(0, len(create_secret())-1)]
 
@@ -19,10 +19,9 @@ class HangmanLetterProvider(LetterProvider):
 def create_secret():
     return 'cat'
 
-
-class SnakeLetterProvider(LetterProvider):
-    def __init__(self, letter):
-        self.letter = letter
-
-    def get_next_letter(self):
-        return chr(self.letter)
+#
+# class SnakeLetterProvider(LetterProvider):
+#     def check_chosen_letter(self):
+#
+#     def get_next_letter(self):
+#         return chr(self.letter)
