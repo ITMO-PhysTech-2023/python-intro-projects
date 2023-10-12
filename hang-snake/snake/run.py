@@ -1,16 +1,13 @@
 import copy
-import os
 import time
 from pynput import keyboard
 from random import randint
-from os import system
 
 
 class SnakeGame:
-    def __init__(self, width, height, sleep_step):
+    def __init__(self, width, height):
         self.WIDTH = width
         self.HEIGHT = height
-        self.SLEEP_STEP = sleep_step
         self.SCREEN = list()
         self.direction = (-1, 0)
         self.pause = False
@@ -19,11 +16,11 @@ class SnakeGame:
         self.snake = [copy.deepcopy(self.snake_head)]
         self.apple = self.random_position()
 
-# возвращает список из двух рандомных чисел (координаты на поле) V
+# перенес
     def random_position(self):
         return [randint(1, self.HEIGHT - 2), randint(1, self.WIDTH - 2)]
 
-# считывает изменения direction и pause V
+# перенес
     def process_press(self, key):
         match key:
             case keyboard.Key.left:
@@ -40,17 +37,17 @@ class SnakeGame:
                 else:
                     self.pause = True
 
-# создает поле в виде двумерного списка, к которому можно обращаться по координатам V
+# перенес
     def make_field(self):
         for i in range(self.HEIGHT - 1):
             self.SCREEN.append(self.WIDTH * ['.'])
 
-# возвращает положение яблока вне змейки (координаты) V
+# перенес
     def apple_generation(self):
         while self.apple in self.snake:
             self.apple = self.random_position()
 
-# обеспечивает движение змейки на один шаг + проверка на съеденное яблоко V
+# перенес
     def snake_move(self):
         if self.apple in self.snake:
             self.apple_generation()
@@ -62,13 +59,13 @@ class SnakeGame:
         self.snake_head[0] += self.direction[0]
         self.snake_head[1] += self.direction[1]
 
-# проверка на проигрыш V
+# перенес
     def is_lost(self) -> bool:
         return (self.snake_head[0] not in range(len(self.SCREEN))) or \
                 (self.snake_head[1] not in range(len(self.SCREEN[1]))) or \
                 (self.snake_head in self.snake)
 
-# печатание всякого на экран V
+# перенес
     def print_everything(self):
         field = ''
         screen = copy.deepcopy(self.SCREEN)
@@ -79,7 +76,9 @@ class SnakeGame:
         for i in screen:
             field += ('  '.join(i) + '\n')
         print('\n' * 5)
+        print(len(self.snake))
         print(field)
+        print(self.counter)
 
 # собственно, запускает игру
     def run(self):
@@ -93,8 +92,12 @@ class SnakeGame:
                 if self.is_lost():
                     print('Game over!\nYour score: ', self.counter)
                     break
-                time.sleep(self.SLEEP_STEP)
+                if len(self.snake) <= 55:
+                    time.sleep(0.25 - (len(self.snake) * 0.003))
+                else:
+                    time.sleep(0.25 - 55 * 0.003)
 
 
-s_game = SnakeGame(25, 25, 0.1)
-s_game.run()
+if __name__ == '__main__':
+    s_game = SnakeGame(25, 25)
+    s_game.run()

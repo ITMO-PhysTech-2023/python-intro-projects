@@ -7,77 +7,78 @@ def create_secret(a: list):
 
 
 class HangmanGame:
+    russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь',
+                     'обезьяна', 'ягуар', 'анаконда', 'выхухоль']
+    english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion',
+                     'chicken', 'jaguar', 'chameleon', 'crocodile']
+    FIELDS = [
+        r'''
+           +----+
+                |
+                |
+                |
+                |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+                |
+                |
+                |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+           o    |
+                |
+                |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+           o    |
+           |    |
+                |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+           o    |
+           |\   |
+                |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+           o    |
+          /|\   |
+                |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+           o    |
+          /|\   |
+          /     |
+        _______/|\_
+        ''',
+        r'''
+           +----+
+           |    |
+           o    |
+          /|\   |
+          / \   |
+        _______/|\_
+        '''
+    ]
+
     def __init__(self):
-        self.FIELDS = [
-            r'''
-               +----+
-                    |
-                    |
-                    |
-                    |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-                    |
-                    |
-                    |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-               o    |
-                    |
-                    |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-               o    |
-               |    |
-                    |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-               o    |
-               |\   |
-                    |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-               o    |
-              /|\   |
-                    |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-               o    |
-              /|\   |
-              /     |
-            _______/|\_
-            ''',
-            r'''
-               +----+
-               |    |
-               o    |
-              /|\   |
-              / \   |
-            _______/|\_
-            '''
-            ]
-        self.russian_words = ['капибара', 'аллигатор', 'черепаха', 'жираф', 'муравей', 'антилопа', 'медведь',
-                              'обезьяна', 'ягуар', 'анаконда']
-        self.english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion',
-                              'chicken', 'jaguar', 'chameleon']
         self.SECRET = ''
         self.letter_choosing = ''
         self.invalid_letter = ''
@@ -100,7 +101,7 @@ class HangmanGame:
                 self.letter_choosing = 'Enter your letter: '
                 self.invalid_letter = 'Invalid input! Try again'
                 self.wrong_letter = "This letter isn't in the word"
-                self.losing = 'GAME OVER!'
+                self.losing = 'GAME OVER!\n It was '
                 self.winning = 'You won! Congratulations!'
                 break
             elif self.language == 'Rus':
@@ -115,7 +116,7 @@ class HangmanGame:
                 print('Invalid input! Try again/Некорректный ввод. Попробуйте еще раз')
 
 # принимает букву и чекает ее корректность
-    def check_correct(self) -> bool:
+    def check_incorrect(self) -> bool:
         return (len(self.letter)) != 1 or \
                 (self.language == 'Eng' and (ord(self.letter) < ord('a') or ord(self.letter) > ord('z'))) or \
                 (self.language == 'Rus' and (ord(self.letter) < ord('а') or ord(self.letter) > ord('я')))
@@ -132,12 +133,23 @@ class HangmanGame:
             self.turn_number += 1
 
 # чекает, не проиграл ли игрок
-    def check_lost(self) -> bool:
+    def check_losing(self):
         return self.turn_number == len(self.FIELDS) - 1
 
+# поражение
+    def you_lost(self):
+        print(self.FIELDS[self.turn_number])
+        print(self.losing)
+        print(self.SECRET)
+
 # чекает, не выиграл ли игрок
-    def check_won(self) -> bool:
+    def check_winning(self):
         return ''.join(self.secret_letters) == self.SECRET
+
+# победа
+    def you_won(self):
+        print(self.winning)
+        print(self.SECRET.upper())
 
 # печатает всякое
     def print_everything(self):
@@ -153,20 +165,19 @@ class HangmanGame:
             os.system('cls')
             self.print_everything()
             self.letter = input(self.letter_choosing).lower()
-            if self.check_correct():
+            if self.check_incorrect():
                 print(self.invalid_letter)
                 self.letter = ''
                 continue
             self.chek_true()
-            if self.check_lost():
-                print(self.FIELDS[self.turn_number])
-                print(self.losing)
+            if self.check_losing():
+                self.you_lost()
                 break
-            if self.check_won():
-                print(self.winning)
-                print(self.SECRET.upper())
+            if self.check_winning():
+                self.you_won()
                 break
 
 
-h_game = HangmanGame()
-h_game.run()
+if __name__ == '__main__':
+    h_game = HangmanGame()
+    h_game.run()
