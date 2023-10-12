@@ -1,8 +1,8 @@
 import time
-
 from common.util import clear_terminal
 from pynput import keyboard
 from random import randint
+
 
 width, height = 20, 20
 
@@ -27,6 +27,8 @@ def process_press(key):
 snake = [generate_position()]
 apple = generate_position()
 body_snake = 0
+l_width = [i for i in range(width + 1)]
+l_height = [i for i in range(height + 1)]
 
 while apple in snake:
     apple = generate_position()
@@ -37,6 +39,9 @@ with keyboard.Listener(on_press=process_press) as listener:
         # рисуем змею и яблоко на поле
         field = [['.' for i in range(width)] for i in range(height)]
         new_elem = (snake[0][0] + direction[0], snake[0][1] + direction[1])
+        if new_elem[0] not in l_height or new_elem[1] not in l_width or new_elem in snake:
+            print('You lost')
+            break
         if body_snake == 0:
             field[snake[0][0]][snake[0][1]] = 'O'
         else:
