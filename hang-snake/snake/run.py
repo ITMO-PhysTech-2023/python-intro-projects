@@ -76,7 +76,6 @@ class SnakeGame:
         for i in screen:
             field += ('  '.join(i) + '\n')
         print('\n' * 5)
-        print(len(self.snake))
         print(field)
         print(self.counter)
 

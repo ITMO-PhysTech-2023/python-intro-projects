@@ -106,13 +106,14 @@ class MainGame:
         self.language = ''
         self.game_continue = ''
         self.snake_won = ''
+        self.exit = ''
         self.you_collected_letters = ''
         self.letters_on_field = [self.random_letter(), self.random_letter(), self.random_letter(),
                                  self.random_letter(), self.random_letter()]
         self.letters_positions = [self.snake_random_position(), self.snake_random_position(),
                                   self.snake_random_position(), self.snake_random_position(),
                                   self.snake_random_position()]
-        self.letters_for_choosing = []
+        self.letter_for_turn = ''
 
 # обработка нажатия клавиш для змейки DONE
     def process_press(self, key):
@@ -134,7 +135,7 @@ class MainGame:
 # выбор языка для всей игры DONE
     def choosing_language(self):
         while True:
-            self.language = input('Select language/Выберите язык (Eng/Rus): ')
+            self.language = input('Select language/Выберите язык (Eng/Рус): ')
             if self.language == 'Eng':
                 self.HANG_SECRET = create_secret(self.hang_english_words)
                 self.hang_letter_choosing = 'Enter your letter: '
@@ -149,8 +150,9 @@ class MainGame:
                 self.you_collected_letters = 'Your collected letters: '
                 self.game_continue = 'Press Enter to continue'
                 self.snake_won = 'Wow! \nYou finished snake...\nSo, you win)'
+                self.exit = 'Press Enter to exit'
                 break
-            elif self.language == 'Rus':
+            elif self.language == 'Рус':
                 self.HANG_SECRET = create_secret(self.hang_russian_words)
                 self.hang_letter_choosing = 'Введите букву: '
                 self.hang_invalid_letter = 'Некорректный ввод. Попробуйте еще раз'
@@ -165,6 +167,7 @@ class MainGame:
                 self.you_collected_letters = 'Собранные буквы: '
                 self.game_continue = 'Чтобы продолжить, нажминет Enter'
                 self.snake_won = 'ВОУ! \nТы победил в змейке, а значит, победил и во всей игре)'
+                self.exit = 'Для выхода нажмите Enter'
                 break
             else:
                 print('Invalid input! Try again/Некорректный ввод. Попробуйте еще раз')
@@ -173,7 +176,7 @@ class MainGame:
     def random_letter(self):
         if self.language == 'Eng':
             return str(chr(randint(ord('a'), ord('z'))))
-        elif self.language == 'Rus':
+        elif self.language == 'Рус':
             return str(chr(randint(ord('а'), ord('я'))))
 
 # возвращает список из трех рандомных букв DONE
@@ -215,17 +218,19 @@ class MainGame:
             self.snake.pop()
         for i in range(len(self.letters_positions)):
             if self.letters_positions[i] in self.snake:
-                if self.letters_on_field[i] not in self.letters_for_choosing and self.letters_on_field[i] != '.':
-                    self.letters_for_choosing.append(self.letters_on_field[i])
+                if self.letters_on_field[i] != '.':
+                    self.letter_for_turn = self.letters_on_field[i]
                 self.letters_on_field[i] = '.'
+                self.letters_positions_generation()
+                self.field_letters_generation()
         self.snake_head[0] += self.snake_direction[0]
         self.snake_head[1] += self.snake_direction[1]
 
 # проверка смерти змейки DONE
     def snake_is_lost(self) -> bool:
         return (self.snake_head[0] not in range(len(self.SNAKE_SCREEN))) or \
-               (self.snake_head[1] not in range(len(self.SNAKE_SCREEN[1]))) or \
-               (self.snake_head in self.snake)
+                (self.snake_head[1] not in range(len(self.SNAKE_SCREEN[1]))) or \
+                (self.snake_head in self.snake)
 
 # печатает поле для змейки DONE
     def snake_print_everything(self):
@@ -240,11 +245,8 @@ class MainGame:
         for k in screen:
             field += ('  '.join(k) + '\n')
         print('\n' * 5)
+        print(''.join(self.hang_secret_letters))
         print(field)
-
-# чекает корректность хода в висилице DONE
-    def hang_check_incorrect(self) -> bool:
-        return self.hang_letter not in self.letters_for_choosing
 
 # чекает правильность хода в висилице DONE
     def hang_chek_true(self):
@@ -255,7 +257,7 @@ class MainGame:
             print(''.join(self.hang_secret_letters))
         else:
             self.hang_trying_letters.append(self.hang_letter)
-            print(self.hang_wrong_letter)
+            print(self.hang_wrong_letter, '(' + self.letter_for_turn + ')')
             self.hang_turn_number += 1
 
 # чекает поражение в висилице DONE
@@ -270,6 +272,7 @@ class MainGame:
     def lost(self):
         system('cls')
         print(self.losing1 + str(self.snake_counter) + self.losing2)
+        input(self.exit)
 
 # чекает победу DONE
     def check_won(self) -> bool:
@@ -279,13 +282,13 @@ class MainGame:
     def won(self):
         system('cls')
         print(self.winning1 + str(self.snake_counter) + self.winning2)
+        input(self.exit)
 
 # печатает всякое для виселицы
     def hang_print_everything(self):
         print(''.join(self.hang_secret_letters))
         print(self.HANG_FIELDS[self.hang_turn_number])
         print(', '.join(set(self.hang_trying_letters)))
-        print(self.you_collected_letters, ', '.join(self.letters_for_choosing))
 
 # запуск игры
     def run(self):
@@ -295,24 +298,16 @@ class MainGame:
         self.hang_secret_letters = ['_'] * len(self.HANG_SECRET)
         with keyboard.Listener(on_press=self.process_press):
             while True:
-                system('cls')
                 if self.snake_pause:
                     continue
                 self.snake_move()
                 self.snake_print_everything()
-                if len(self.letters_for_choosing) == 3:
+                if self.letter_for_turn != '':
                     system('cls')
                     self.hang_print_everything()
-                    while True:
-                        self.hang_letter = input(self.hang_letter_choosing).lower()
-                        if self.hang_check_incorrect():
-                            print(self.hang_invalid_letter)
-                            self.hang_letter = ''
-                            continue
-                        else:
-                            break
-                    self.letters_for_choosing = []
+                    self.hang_letter = self.letter_for_turn
                     self.hang_chek_true()
+                    self.letter_for_turn = ''
                     input(self.game_continue)
                 if self.check_lost():
                     self.lost()
@@ -326,5 +321,5 @@ class MainGame:
                     sleep(0.25 - 55 * 0.003)
 
 
-game = MainGame(20, 20)
+game = MainGame(25, 25)
 game.run()
