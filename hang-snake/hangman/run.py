@@ -3,17 +3,9 @@ from common.util import clear_terminal
 from pynput import keyboard
 from LetterInput import Letter_Input, LetterInputByHands, LetterInputByRandom
 
+
 a = 0
-'''def repeat(key):
-    global a
-    if key == keyboard.Key.space:
-        a = 'continue'
-    else:
-        a = 'break'''
-
-
 secret_word = input('enter secret word: ').lower()
-
 lose_field = r'''
    +----+
    |    |
@@ -22,7 +14,6 @@ lose_field = r'''
   / \   |
 _______/|\_
 '''.split('\n')
-
 loser = [
     (3, 3),
     (4, 3),
@@ -31,6 +22,13 @@ loser = [
     (5, 2),
     (5, 4)
 ]
+
+def repeat(key):
+    global a
+    if key == keyboard.Key.space:
+        a = 'continue'
+    else:
+        a = 'break'
 
 class Field:
     def __init__(self, ):
@@ -63,7 +61,7 @@ class GameHangman:
     def get_letter(self):
         while True:
             letter = self.LetterInput.input_letter()
-            if ord(letter) < ord('a') or ord(letter) > ord('z') and len(letter) != 1:
+            if len(letter) != 1 or ord(letter) < ord('a') or ord(letter) > ord('z'):
                 print('Error of the enter')
                 continue
             elif letter in self.last_letter:
@@ -103,26 +101,47 @@ class GameHangman:
         if SelectInput == LetterInputByRandom():
             time.sleep(self.timeout)
 
+    def update(self):
+        self.enter_field = ['_' for _ in range(len(self.secret))]
+        self.last_letter = []
+        global a, secret_word
+        a = 0
+        secret_word = input('enter secret word: ').lower()
+        for i in loser:
+            self.field.picture[i[0]][i[1]] = ' '
+        self.field.fails_count = 0
+
+    def proposal(self):
+        print()
+        print('If you want to try again press to space. If you want to stop press other')
+
     def process(self):
         while True:
             self.demonstrate()
             self.actions()
             if self.if_lose():
                 print('You lose! Congratulations!')
-                print()
-                print('If you want to try again press to space. If you want to stop press other')
-                break
+                self.proposal()
+                with keyboard.Listener(on_press=repeat) as listener:
+                    time.sleep(3)
+                    if a == 'continue':
+                        self.update()
+                        continue
+                    else:
+                        break
             elif self.if_win():
-                print('You won! Congratulations!')
-                print()
                 print(''.join(self.enter_field))
                 print()
-                print('If you want to try again press to space. If you want to stop press other')
-                '''with keyboard.Listener(on_press=repeat) as listener:
+                print('You won! Congratulations!')
+                self.proposal()
+                with keyboard.Listener(on_press=repeat) as listener:
+                    time.sleep(3)
                     if a == 'continue':
+                        self.update()
                         continue
-                time.sleep(3)'''
-                break
+                    else:
+                        break
+
 
 SelectInput = LetterInputByHands()
 play = GameHangman(SelectInput, 1)
