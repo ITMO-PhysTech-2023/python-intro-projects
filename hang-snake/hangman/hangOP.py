@@ -1,4 +1,3 @@
-
 import time
 from common.util import clear_terminal
 def create_secret():
