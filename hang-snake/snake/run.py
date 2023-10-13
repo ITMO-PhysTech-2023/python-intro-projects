@@ -26,7 +26,8 @@ elemX = [0 for i in range(100)]
 elemY = [0 for i in range(100)]
 dictionary = 'limit'
 dict_mas = open('dictionary.txt')
-a = [str(i) for i in dict_mas.readlines()]
+a = [str(i)[:-1] for i in dict_mas.readlines()]
+
 
 def start_position():
     global x, y
@@ -123,7 +124,7 @@ def apples_letters():
     k = randint(0, len(avail)-1)
     u1 = 0
     u2 = 0
-    while u1 == u2:
+    while u1 == u2 or u1 == k or u2 == k:
         u1 = randint(0, len(bad_letters)-1)
         u2 = randint(0, len(bad_letters)-1)
     first_letter = avail[k]
@@ -247,6 +248,5 @@ def main():
     board()
     Thread(target=move).start()
     Thread(target=button_move).start()
-
 
 main()
