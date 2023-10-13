@@ -1,6 +1,7 @@
 import random
 import time
 from abc import ABC, abstractmethod
+from threading import Lock
 from typing import Callable
 
 from pynput import keyboard
@@ -131,6 +132,8 @@ class SnakeGame:
     ):
         self.field = Field(height, width, initial_items)
         self.direction = (1, 0)
+        self.direction_lock = Lock()
+        self.direction_change_wait = False
         self.step_sleep = step_sleep
         self.printer = printer
         self.callbacks = []
@@ -150,15 +153,20 @@ class SnakeGame:
             keyboard.Key.right: (0, 1)
         }
         new_direction = mapping.get(key, None)
-        if new_direction is None or opposite_directions(self.direction, new_direction):
-            return
-        self.direction = new_direction
+        with self.direction_lock:
+            if new_direction is None or opposite_directions(self.direction, new_direction):
+                return
+            if self.direction_change_wait:
+                return
+            self.direction = new_direction
+            self.direction_change_wait = True
 
     def step(self):
         object_eaten = self.field.move_snake(self.direction)
         if object_eaten is not None:
             for callback in self.callbacks:
                 callback(object_eaten)
+        self.direction_change_wait = False
         time.sleep(self.step_sleep)
 
     def status(self):
