@@ -62,11 +62,19 @@ class Field:
 class GameSnake:
     def __init__(self, height_f: int, width_f: int, wait_time_repeat):
         self.Field = Field(height_f, width_f)
-        self.Snake = Snake()
-        self.Apple = Apple()
+        # self.Snake = Snake()
+        # self.Apple = Apple()
         self.l_width = [i for i in range(self.Field.width + 1)]
         self.l_height = [i for i in range(self.Field.height + 1)]
         self.wait_time = wait_time_repeat
+
+    @property
+    def Snake(self):
+        return self.Field.Snake_f
+
+    @property
+    def Apple(self):
+        return self.Field.Apple_f
 
     def check_to_eat(self):
         return self.Snake.new_elem == self.Apple.apple

@@ -3,7 +3,6 @@ from common.util import clear_terminal
 from pynput import keyboard
 from LetterInput import Letter_Input, LetterInputByHands, LetterInputByRandom
 
-
 a = 0
 secret_word = input('enter secret word: ').lower()
 lose_field = r'''
@@ -23,12 +22,14 @@ loser = [
     (5, 4)
 ]
 
+
 def repeat(key):
     global a
     if key == keyboard.Key.space:
         a = 'continue'
     else:
         a = 'break'
+
 
 class Field:
     def __init__(self, ):
@@ -102,16 +103,17 @@ class GameHangman:
             time.sleep(self.timeout)
 
     def update(self):
-        self.enter_field = ['_' for _ in range(len(self.secret))]
         self.last_letter = []
         global a, secret_word
         a = 0
         secret_word = input('enter secret word: ').lower()
+        self.secret = secret_word
+        self.enter_field = ['_' for _ in range(len(self.secret))]
         for i in loser:
             self.field.picture[i[0]][i[1]] = ' '
         self.field.fails_count = 0
 
-    def proposal(self):
+    def proposal_repeat(self):
         print()
         print('If you want to try again press to space. If you want to stop press other')
 
@@ -121,8 +123,8 @@ class GameHangman:
             self.actions()
             if self.if_lose():
                 print('You lose! Congratulations!')
-                self.proposal()
-                with keyboard.Listener(on_press=repeat) as listener:
+                self.proposal_repeat()
+                with keyboard.Listener(on_press=repeat):
                     time.sleep(3)
                     if a == 'continue':
                         self.update()
@@ -133,14 +135,16 @@ class GameHangman:
                 print(''.join(self.enter_field))
                 print()
                 print('You won! Congratulations!')
-                self.proposal()
-                with keyboard.Listener(on_press=repeat) as listener:
+                self.proposal_repeat()
+                with keyboard.Listener(on_press=repeat):
                     time.sleep(3)
                     if a == 'continue':
                         self.update()
                         continue
                     else:
                         break
+
+
 
 
 SelectInput = LetterInputByHands()
