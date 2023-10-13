@@ -49,8 +49,9 @@ class Field2:
 
 
 class HangmanGame:
-    def __init__(self, step_sleep: int):
+    def __init__(self, step_sleep: float, life_count: int):
         self.field = Field2()
+        self.life_count = life_count
         self.step_sleep = step_sleep
         self.secret = create_secret()
         self.ch=ch
