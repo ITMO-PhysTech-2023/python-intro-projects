@@ -139,6 +139,7 @@ class SnakeGame:
         self.step_sleep = step_sleep
         self.printer = printer
         self.callbacks = []
+        self.dead = False
 
     def add_object_eaten_callback(self, callback: Callable[[EatableObject], ...]):
         self.callbacks.append(callback)
@@ -172,7 +173,7 @@ class SnakeGame:
         time.sleep(self.step_sleep)
 
     def status(self):
-        if self.field.snake.has_collision():
+        if self.field.snake.has_collision() or self.dead:
             return 'Snake died :('
         if self.field.is_filled():
             return 'You won!'

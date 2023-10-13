@@ -48,6 +48,16 @@ class ReloadObject(EatableObject):
         return ReloadObject(position)
 
 
+class BombObject(EatableObject):
+    BOMB_CHAR = '🕱'
+
+    def __init__(self, position: tuple[int, int]):
+        super().__init__(position, BombObject.BOMB_CHAR)
+
+    def regenerate(self, position: tuple[int, int]):
+        return None
+
+
 def letter_handler(eatable_object: EatableObject):
     if isinstance(eatable_object, LetterObject):
         provider.add_letter(eatable_object.display)
@@ -61,6 +71,11 @@ def letter_handler(eatable_object: EatableObject):
 def speed_handler(eatable_object: EatableObject):
     if isinstance(eatable_object, AppleObject):
         s_game.step_sleep /= 1.1
+
+
+def bomb_handler(eatable_object: EatableObject):
+    if isinstance(eatable_object, BombObject):
+        s_game.dead = True
 
 
 h_game = HangmanGame(
@@ -78,11 +93,13 @@ s_game = SnakeGame(
         LetterObject,
         LetterObject,
         LetterObject,
-        ReloadObject
+        ReloadObject,
+        BombObject
     ]
 )
 s_game.add_object_eaten_callback(letter_handler)
 s_game.add_object_eaten_callback(speed_handler)
+s_game.add_object_eaten_callback(bomb_handler)
 
 h_thread = Thread(target=h_game.run, daemon=True)
 s_thread = Thread(target=s_game.run, daemon=True)
