@@ -118,6 +118,8 @@ class Field:
         ]
         self.snake.draw_on(matrix)
         for item in self.objects:
+            if item is None:
+                continue
             row, col = item.position
             matrix[row][col] = item.display
         return matrix

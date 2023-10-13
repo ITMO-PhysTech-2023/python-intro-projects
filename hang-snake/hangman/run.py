@@ -1,12 +1,11 @@
 import time
 
-from common.printer import DefaultPrinter, Printer, ReversePrinter
-from common.util import clear_terminal
-from hangman.provider import KeyboardLetterProvider, LetterProvider, RandomLetterProvider
+from common.printer import DefaultPrinter, Printer
+from hangman.provider import LetterProvider, RandomLetterProvider
 
 
 def create_secret():
-    return 'capybara'
+    return 'cat'
 
 
 FINAL_FIELD = r'''

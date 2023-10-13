@@ -4,7 +4,7 @@ from common.util import hide_cursor
 from connection.multiprinter import MultiPrinter
 from hangman.provider import QueueProvider
 from hangman.run import HangmanGame
-from snake.run import EatableObject, SnakeGame
+from snake.run import AppleObject, EatableObject, SnakeGame
 
 ALPHA = map(chr, range(ord('a'), ord('z') + 1))
 
@@ -58,6 +58,11 @@ def letter_handler(eatable_object: EatableObject):
             item.change_letter()
 
 
+def speed_handler(eatable_object: EatableObject):
+    if isinstance(eatable_object, AppleObject):
+        s_game.step_sleep /= 1.1
+
+
 h_game = HangmanGame(
     provider,
     0.5,
@@ -77,6 +82,7 @@ s_game = SnakeGame(
     ]
 )
 s_game.add_object_eaten_callback(letter_handler)
+s_game.add_object_eaten_callback(speed_handler)
 
 h_thread = Thread(target=h_game.run, daemon=True)
 s_thread = Thread(target=s_game.run, daemon=True)
