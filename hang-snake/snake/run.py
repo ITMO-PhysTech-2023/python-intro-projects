@@ -1,10 +1,12 @@
 import random
 import time
+from abc import ABC, abstractmethod
+from typing import Callable
 
 from pynput import keyboard
 
 from common.printer import DefaultPrinter, Printer
-from common.util import clear_terminal, terminal_size
+from common.util import clear_terminal
 
 
 def opposite_directions(d1: tuple[int, int], d2: tuple[int, int]):
@@ -12,7 +14,7 @@ def opposite_directions(d1: tuple[int, int], d2: tuple[int, int]):
 
 
 class Snake:
-    SYMBOL = '■'
+    SNAKE_CHR = '■'
 
     def __init__(self, initial_cell: tuple[int, int]):
         self.cells = [initial_cell]
@@ -34,62 +36,87 @@ class Snake:
 
     def draw_on(self, matrix: list[list[str]]):
         for row, col in self.cells:
-            matrix[row][col] = Snake.SYMBOL
+            matrix[row][col] = Snake.SNAKE_CHR
 
     def has_collision(self):
         return self.cells[0] in self.cells[1:]
 
 
-class EatableObject:
+class EatableObject(ABC):
     def __init__(self, position: tuple[int, int], display: str):
         self.position = position
         self.display = display
 
+    @abstractmethod
+    def regenerate(self, position: tuple[int, int]):
+        pass
+
+
+EatableObjectFactory = Callable[[tuple[int, int]], EatableObject]
+
+
+class AppleObject(EatableObject):
+    APPLE_CHR = '●'
+
+    def __init__(self, position: tuple[int, int]):
+        super().__init__(position, AppleObject.APPLE_CHR)
+
+    def regenerate(self, position: tuple[int, int]):
+        return AppleObject(position)
+
 
 class Field:
-    NEUTRAL = '.'
+    NEUTRAL = '·'
 
-    def __init__(self, height: int, width: int):
+    def __init__(self, height: int, width: int, initial_objects: list[EatableObjectFactory]):
         self.height = height
         self.width = width
         self.snake = Snake(self.random_position())
-        self.objects = {
-            'apple': self.generate_object('a')
-        }
+        self.objects = [AppleObject(self.random_object_position())]
+        for item_factory in initial_objects:
+            self.objects.append(item_factory(self.random_object_position()))
 
     def random_position(self) -> tuple[int, int]:
         return (random.randint(0, self.height - 1),
                 random.randint(0, self.width - 1))
 
-    def generate_object(self, display: str) -> EatableObject:
+    def random_object_position(self) -> tuple[int, int]:
+        item_positions = (
+            {item.position for item in self.objects if item is not None}
+            if hasattr(self, 'objects')
+            else {}
+        )
         position = self.random_position()
-        if position in self.snake.cells:
+        if position in self.snake.cells or position in item_positions:
             position = self.random_position()
-        return EatableObject(position, display)
+        return position
 
-    def move_snake(self, direction: tuple[int, int]):
+    def move_snake(self, direction: tuple[int, int]) -> EatableObject | None:
         self.snake.grow(direction)
         self.snake.fix_to_bounds(self.height, self.width)
-        food_eaten = False
+        food_eaten = None
         snake_head = self.snake.cells[0]
-        for key, item in self.objects.items():
+        for i, item in enumerate(self.objects):
+            if item is None:
+                continue
             if item.position == snake_head:
-                food_eaten = True
-                self.objects[key] = self.generate_object(item.display)
+                food_eaten = item
+                self.objects[i] = item.regenerate(self.random_object_position())
                 break
-        if not food_eaten:
+        if not isinstance(food_eaten, AppleObject):
             self.snake.cut_tail()
+        return food_eaten
 
     def is_filled(self):
         return self.height * self.width == len(self.snake)
 
-    def build(self):
+    def build_matrix(self):
         matrix = [
             [Field.NEUTRAL for _ in range(self.width)]
             for _2 in range(self.height)
         ]
         self.snake.draw_on(matrix)
-        for item in self.objects.values():
+        for item in self.objects:
             row, col = item.position
             matrix[row][col] = item.display
         return matrix
@@ -99,12 +126,17 @@ class SnakeGame:
     def __init__(
             self, height: int, width: int,
             step_sleep: float,
-            printer: Printer
+            printer: Printer,
+            initial_items: list[EatableObjectFactory]
     ):
-        self.field = Field(height, width)
+        self.field = Field(height, width, initial_items)
         self.direction = (1, 0)
         self.step_sleep = step_sleep
         self.printer = printer
+        self.callbacks = []
+
+    def add_object_eaten_callback(self, callback: Callable[[EatableObject], ...]):
+        self.callbacks.append(callback)
 
     @staticmethod
     def opposite_directions(d1: tuple[int, int], d2: tuple[int, int]):
@@ -123,22 +155,35 @@ class SnakeGame:
         self.direction = new_direction
 
     def step(self):
-        self.field.move_snake(self.direction)
+        object_eaten = self.field.move_snake(self.direction)
+        if object_eaten is not None:
+            for callback in self.callbacks:
+                callback(object_eaten)
         time.sleep(self.step_sleep)
+
+    def status(self):
+        if self.field.snake.has_collision():
+            return 'Snake died :('
+        if self.field.is_filled():
+            return 'You won!'
+
+    def print(self):
+        extra_lines = []
+        if (status := self.status()) is not None:
+            extra_lines.append(status)
+        matrix = self.field.build_matrix()
+        for line in extra_lines:
+            matrix += [list(line)]
+        self.printer.print_field(matrix)
 
     def run(self):
         with keyboard.Listener(on_press=self.process_press):
             while True:
                 clear_terminal()
-                matrix = self.field.build()
-                self.printer.print_field(matrix)
                 self.step()
-
-                if self.field.snake.has_collision():
-                    print('Snake died :(')
-                    break
-                if self.field.is_filled():
-                    print('You won!')
+                self.print()
+                if self.status() is not None:
+                    self.print()
                     break
 
 
@@ -146,5 +191,5 @@ if __name__ == '__main__':
     # width, height = terminal_size()
     width, height = 10, 10
     printer = DefaultPrinter()
-    game = SnakeGame(height, width, 0.1, printer)
+    game = SnakeGame(height, width, 0.1, printer, [])
     game.run()

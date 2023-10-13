@@ -39,10 +39,9 @@ class Field:
         for row, col in HUMAN:
             self.matrix[row][col] = ' '
 
-    def print(self):
-        for row in self.matrix:
-            print(''.join(row))
-        print()
+    @property
+    def width(self):
+        return max([len(row) for row in FINAL_FIELD])
 
     def add_human_part(self):
         row, col = HUMAN[-self.remaining_fails]
@@ -90,26 +89,37 @@ class HangmanGame:
         self.check_guess(letter)
         time.sleep(self.step_sleep)
 
-    def show(self):
-        clear_terminal()
-        # self.field.print()
-        # print(''.join(self.guessed))
+    def build_matrix(self):
+        delta = self.field.width - len(self.guessed)
+        last_row = [' ' for _ in range(delta // 2)] + self.guessed
         out = self.field.matrix + [
             [],
-            self.guessed
+            last_row
         ]
-        self.printer.print_field(out)
+        return out
+
+    def status(self):
+        if self.is_won():
+            return 'Cool! You won!'
+        if self.is_lost():
+            return 'You lost :('
+
+    def print(self):
+        extra_lines = []
+        if (status := self.status()) is not None:
+            extra_lines.append(status)
+        matrix = self.build_matrix()
+        for line in extra_lines:
+            matrix += [list(line)]
+        self.printer.print_field(matrix)
 
     def run(self):
-        self.show()
+        self.print()
         while True:
             self.step()
-            self.show()
-            if self.is_won():
-                print('Cool! You won!')
-                break
-            if self.is_lost():
-                print('Wow, you lost! Sad :(')
+            self.print()
+            if self.status() is not None:
+                self.print()
                 break
 
 
