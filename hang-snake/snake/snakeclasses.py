@@ -14,7 +14,6 @@ def random_position():
 
 
 def process_press(key):
-    # обработчик нажатия на клавиши (можно сделать и поаккуратнее)
     global direction
     match key:
         case keyboard.Key.left:
@@ -27,62 +26,70 @@ def process_press(key):
             direction = (1, 0)
 
 
-class Field:
+class Apple:
     def __init__(self):
-        self.FIELD = [['.' for i in range(WIDTH)] for i in range(HEIGHT)]
-        self.apple = random_position()
-        self.snake = [[randint(0, HEIGHT - 1), randint(0, WIDTH - 1)]]
+        self.position = random_position()
+
+class Snake:
+    def __init__(self):
+        self.cells = [[randint(0, HEIGHT - 1), randint(0, WIDTH - 1)]]
         self.snake_tail = 0
-
-    def The_Field(self):
-        self.FIELD = [['.' for i in range(WIDTH)] for _ in range(HEIGHT)]
-
-    def Zapolnenie_Apple(self):
-        self.FIELD[self.apple[0]][self.apple[1]] = 'a'
-
-    def Vyvod_Polya(self):
-        for row in self.FIELD:
-            print(''.join(row))
-            
-    def Zapolnenie_Snake(self):
-        for elem in self.snake:  # обновляем змею
-            if self.snake_tail > 0:
-                self.FIELD[elem[0] % WIDTH][elem[1] % HEIGHT] = 'o'
-                self.FIELD[self.snake[0][0] % WIDTH][self.snake[0][1] % HEIGHT] = 's'
-            else:
-                self.FIELD[self.snake[0][0]][self.snake[0][1]] = 's'
 
     def Move(self):
         if self.snake_tail > 0:
             for i in range(self.snake_tail, 0, -1):
-                self.snake[i][0] = self.snake[i - 1][0]
-                self.snake[i][1] = self.snake[i - 1][1]
-        self.snake[0][0] = (self.snake[0][0] + direction[0]) % WIDTH
-        self.snake[0][1] = (self.snake[0][1] + direction[1]) % HEIGHT
+                self.cells[i][0] = self.cells[i - 1][0]
+                self.cells[i][1] = self.cells[i - 1][1]
+        self.cells[0][0] = (self.cells[0][0] + direction[0]) % WIDTH
+        self.cells[0][1] = (self.cells[0][1] + direction[1]) % HEIGHT
 
-    def Snake_Eat_Apple(self):
-        if self.snake[0][0] == self.apple[0] and self.snake[0][1] == self.apple[1]:
-            self.apple = random_position()
+    def Snake_Eat_Apple(self, apple: Apple):
+        if self.cells[0][0] == apple.position[0] and self.cells[0][1] == apple.position[1]:
+            apple.position = random_position()
             self.snake_tail += 1
-            self.snake.insert(0, [self.snake[0][0] + direction[0], self.snake[0][1] + direction[1]])
+            self.cells.insert(0, [self.cells[0][0] + direction[0], self.cells[0][1] + direction[1]])
+
+
+class Field:
+    def __init__(self):
+        self.FIELD = [['.' for i in range(WIDTH)] for i in range(HEIGHT)]
+
+    def The_Field(self):
+        self.FIELD = [['.' for i in range(WIDTH)] for _ in range(HEIGHT)]
+
+    def Add_Snake(self, snake: Snake):
+        for elem in snake.cells:  # обновляем змею
+            if snake.snake_tail > 0:
+                self.FIELD[elem[0] % WIDTH][elem[1] % HEIGHT] = 'o'
+                self.FIELD[snake.cells[0][0] % WIDTH][snake.cells[0][1] % HEIGHT] = 's'
+            else:
+                self.FIELD[snake.cells[0][0]][snake.cells[0][1]] = 's'
+
+    def Add_Apple(self, apple: Apple):
+        self.FIELD[apple.position[0]][apple.position[1]] = 'a'
+
+    def Field_Out(self):
+        for row in self.FIELD:
+            print(''.join(row))
 
 
 class GameSnake:
     def __init__(self):
         self.Field = Field()
+        self.Snake = Snake()
+        self.Apple = Apple()
 
     def Run(self):
         with keyboard.Listener(on_press=process_press) as listener:
             while True:
                 os.system('cls')
                 self.Field.The_Field()
-                self.Field.Zapolnenie_Snake()
-                self.Field.Zapolnenie_Apple()
-                self.Field.Vyvod_Polya()
-                self.Field.Move()
-                self.Field.Snake_Eat_Apple()
+                self.Field.Add_Snake(self.Snake)
+                self.Field.Add_Apple(self.Apple)
+                self.Field.Field_Out()
+                self.Snake.Move()
+                self.Snake.Snake_Eat_Apple(self.Apple)
                 time.sleep(0.5)
-
 
 
 '''          
