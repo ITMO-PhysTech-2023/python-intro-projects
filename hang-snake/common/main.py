@@ -1,64 +1,25 @@
 import threading
 from threading import Thread
 from hangman.run import Hangmangame
-from providers import RandomLetterProvider, SecretLetterProvider
+from providers import RandomLetterProvider, SecretLetterProvider, QueueProvider
 from snake.run import Snakegame
-import  time
 
+lock = threading.Lock()
 s_game = Snakegame(RandomLetterProvider(), SecretLetterProvider())
-h_game = Hangmangame()
+h_game = Hangmangame(QueueProvider())
+provider = QueueProvider()
 
 
-def play_snake():
-    if s_game.chosen_letter is None:
-        s_game.run()
+def letter_handler():
+    provider.add_letter(s_game.chosen_letter)
 
 
-def play_hang():
-    while s_game.chosen_letter is not None:
-        s_game.Playing = False
-        print(s_game.chosen_letter)
+s_game.add_object_eaten_callback(letter_handler)
 
+h_thread = Thread(target=h_game.run, daemon=True)
+s_thread = Thread(target=s_game.run, daemon=True)
 
-while True:
-    play_snake()
-    play_hang()
-
-
-
-
-
-# lock = threading.Lock()
-# value = None
-# letter = None
-#
-#
-# def run_snake_game():
-#     global value, letter
-#     s_game = Snakegame(RandomLetterProvider(), SecretLetterProvider())
-#     s_game.run()
-#     letter = s_game.chosen_letter
-#     print(letter)
-    # if letter is not None:
-    #     lock.acquire()
-    #     print(letter)
-    #     time.sleep(5)
-    #     value = "Value from Game 1"
-    #     lock.release()  # Release the lock after setting the variables
-
-
-# def run_hangman_game():
-#     global value, letter
-#     lock.acquire()
-#     if value is not None:
-#         lock.release()  # Release the lock before starting Hangmangame
-#         h_game = Hangmangame(letter)
-#         h_game.run()
-#         letter = None
-#         value = None
-
-
-# s_thread = Thread(target=run_snake_game)
-# h_thread = Thread(target=run_hangman_game)
-# s_thread.start()
-# h_thread.start()
+h_thread.start()
+s_thread.start()
+h_thread.join()
+s_thread.join()

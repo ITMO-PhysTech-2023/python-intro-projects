@@ -1,4 +1,5 @@
 import random
+from queue import Queue
 
 
 class LetterProvider:
@@ -19,9 +20,13 @@ class SecretLetterProvider(LetterProvider):
 def create_secret():
     return 'cat'
 
-#
-# class SnakeLetterProvider(LetterProvider):
-#     def check_chosen_letter(self):
-#
-#     def get_next_letter(self):
-#         return chr(self.letter)
+
+class QueueProvider(LetterProvider):
+    def __init__(self):
+        self.queue = Queue()
+
+    def add_letter(self, letter: str):
+        self.queue.put(letter)
+
+    def get_next_letter(self) -> str:
+        return self.queue.get()

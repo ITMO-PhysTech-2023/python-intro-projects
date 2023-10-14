@@ -1,3 +1,5 @@
+from typing import Callable
+
 from pynput import keyboard
 import time
 import os
@@ -13,9 +15,9 @@ class Snakegame:
         self.HEIGHT = 15
         self.eat = False
         self.flag_end = False
-        self.snake = [(5, self.HEIGHT // 2), (4, self.HEIGHT // 2), (3, self.HEIGHT // 2)]
+        self.snake = [(5, self.HEIGHT // 2)]
 
-        self.apples = [(12, 7), (10, 7), (14, 7), (12, 12), (18, 3)]
+        self.apples = [(12, self.HEIGHT // 2), (10, self.HEIGHT // 2), (14, self.HEIGHT // 2), (12, 12), (18, 3)]
         self.letters_on_field = ['a', 'a', 'a', 'a', 'a']
         self.provider_random = letter_provider1
         self.letters_eaten = []
@@ -28,6 +30,7 @@ class Snakegame:
         self.letters_counter = 0
         self.index_letter = None
         self.chosen_letter = None
+        self.callbacks = []
 
     def random_position(self):
         while True:
@@ -90,13 +93,14 @@ class Snakegame:
         self.index_letter = int(input()) - 1
         if self.index_letter <= 2:
             self.chosen_letter = self.letters_eaten[self.index_letter]
-            print(self.chosen_letter)
-            time.sleep(5)
+            for callback in self.callbacks:
+                callback()
+            return self.chosen_letter
         else:
             print(wrong_input)
 
-    def give_letter_to_provider(self):
-        return self.index_letter
+    def add_object_eaten_callback(self, callback: Callable[[str], ...]):
+        self.callbacks.append(callback)
 
     def process_press(self, key):
         match key:
