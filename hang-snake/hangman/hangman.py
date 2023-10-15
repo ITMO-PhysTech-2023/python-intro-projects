@@ -1,55 +1,13 @@
 from random import choice
-
-plate = (
-    """
-            +
-            |
-            |   
-            |
-            |
-    _______/|\\_
-    """,
-    """
-       +----+
-       |    |
-            |
-            |
-            |
-    _______/|\\_
-    """,
-    """
-       +----+
-       |    |
-       o    |
-            |
-            |
-    _______/|\\_
-    """,
-    """
-       +----+
-       |    |
-       o    |
-      /|\\   |
-            |
-    _______/|\\_
-    """,
-    """
-       +----+
-       |    |
-       o    |
-      /|\\   |
-      / \\
-    _______/|\\_
-    """
-)
+from utils1 import *
 mistakes = len(plate)
 words = ('машина', 'слон', 'мегафакультет', 'баратрум', 'контейнер', 'пылесос', 'капибара', 'снитч')
 word = choice(words)
-print(word)
 word1 = '-' * len(word)
 wrong = 0
-while mistakes != 0 and word1 != word:
+while True:
     letter = input('Дай мне букву: ')
+    clear_terminal()
     if letter in word:
         a = ''
         for i in range(len(word)):
@@ -68,5 +26,6 @@ while mistakes != 0 and word1 != word:
         break
     else:
         print(plate[wrong])
-if mistakes != 0:
-    print('ну лан')
+    if mistakes != 0 and word1 == word:
+        print('ну лан, победил')
+        break
