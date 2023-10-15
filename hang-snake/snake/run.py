@@ -6,7 +6,6 @@ from common.providers import LetterProvider, RandomLetterProvider, SecretLetterP
 from common.rules import first_message, wrong_input, rules
 from common.printer import DefaultPrinter, Printer
 from common.util import clear_terminal
-import os
 
 
 class Snake:
@@ -19,26 +18,33 @@ class Snake:
         head_snake = self.cells[0][0] + direction[0], self.cells[0][1] + direction[1]
         self.cells.insert(0, head_snake)
 
+    def fix_to_bounds(self, height: int, width: int):
+        row, col = self.cells[0]
+        self.cells[0] = (row % height, col % width)
+
+    def snake_die(self):
+        return self.cells[0] in self.cells[1:]
+
     def draw_on(self, matrix: list[list[str]]):
         for row, col in self.cells:
             matrix[row][col] = Snake.SNAKE
 
 
 class Field:
-    EMPTY = ' '
+    EMPTY = '.'
 
     def __init__(self,
                  letter_provider1: LetterProvider,
                  letter_provider2: LetterProvider):
-        self.HEIGHT = 30
-        self.WIDTH = 15
-        self.snake = Snake(tuple((self.WIDTH // 8, self.HEIGHT // 2)))
-        self.apples = [(self.WIDTH // 2, self.HEIGHT // 2),
+        self.HEIGHT = 20
+        self.WIDTH = 20
+        self.snake = Snake((self.WIDTH // 4, self.HEIGHT // 2))
+        self.apples = [(self.WIDTH // 2 + 1, self.HEIGHT // 2),
                        (3*self.WIDTH // 4, self.HEIGHT // 2),
                        (5*self.WIDTH // 8, self.HEIGHT // 2),
                        (self.WIDTH // 2, self.HEIGHT // 4),
                        (self.WIDTH // 2, 3*self.HEIGHT // 4)]
-        self.hangman_apple = []
+        self.hangman_apple = [(), ()]
 
         self.letters_on_field = ['a', 'a', 'a', 'a', 'a']
         self.letters_eaten = []
@@ -50,11 +56,22 @@ class Field:
         self.provider_random = letter_provider1
         self.provider_hangman = letter_provider2
 
-    def random_position(self):
+    def random_position(self) -> tuple[int, int]:
         while True:
-            position = [randint(2, self.WIDTH-2), randint(2, self.HEIGHT-2)]
-            if position not in self.snake and position not in self.apples and position not in self.hangman_apple:
+            position = (randint(2, self.WIDTH-2)), (randint(2, self.HEIGHT-2))
+            if position in self.snake.cells:
+                position = self.random_position()
+            if position not in self.apples and position not in self.hangman_apple:
                 return position
+
+    def update_apple(self, x: int):
+        self.apples[x] = self.random_position()
+        self.letters_on_field[x] = self.provider_random.get_next_letter()
+
+    def eating_apple(self, x: int):
+        self.eat = True
+        self.letters_counter += 1
+        self.letters_eaten.append(self.letters_on_field[x])
 
     def generate_hangman_apple(self):
         if self.hangman_apple == self.snake.cells[0]:
@@ -67,43 +84,30 @@ class Field:
     def generate_apples_start(self):
         for i in range(4):
             if self.apples[i] == self.snake.cells[0]:
-                self.eat = True
-                self.letters_counter += 1
-                self.letters_eaten.append(self.letters_on_field[i])
+                self.eating_apple(i)
                 self.apples[i] = self.random_position()
 
     def generate_apples_game(self):
         for i in range(4):
             if self.apples[i] == self.snake.cells[0]:
-                self.eat = True
-                self.letters_counter += 1
-                self.letters_eaten.append(self.letters_on_field[i])
-                self.apples[i] = self.random_position()
-                self.letters_on_field[i] = self.provider_random.get_next_letter()
+                self.eating_apple(i)
+                self.update_apple(i)
 
     def move_snake(self, direction: tuple[int, int]):
         self.snake.snake_step(direction)
+        self.snake.fix_to_bounds(self.HEIGHT, self.WIDTH)
         if not self.eat:
             self.snake.cells.pop()
         else:
             self.eat = False
 
-    def is_lost(self) -> bool:
-        return self.snake.cells[0][0] in (0, self.WIDTH) or\
-                self.snake.cells[0][1] in (0, self.HEIGHT) or\
-                self.snake.cells[0] in self.snake[1:]
-
-    def delete_apple(self):
-        self.apples.pop()
-
-    def counter(self):
-        return self.letters_counter
-
-    def return_eaten(self):
-        return self.letters_eaten
-
-    def clear_eaten(self):
+    def clear_stats(self):
         self.letters_eaten = []
+        self.letters_counter = 0
+        for i in range(4):
+            self.update_apple(i)
+        self.hangman_apple = self.random_position()
+        self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
 
     def build_matrix(self):
         matrix = [
@@ -114,9 +118,9 @@ class Field:
         for i in range(4):
             row, col = self.apples[i]
             matrix[row][col] = self.letters_on_field[i]
-        for row, col in self.hangman_apple:
+        if self.hangman_apple != [(), ()]:
+            row, col = self.hangman_apple
             matrix[row][col] = self.hangman_letter_on_field
-
         return matrix
 
 
@@ -137,7 +141,7 @@ class Snakegame:
     def choose_letter(self):
         self.index_letter = int(input()) - 1
         if self.index_letter <= 2:
-            self.chosen_letter = self.field.return_eaten()[self.index_letter]
+            self.chosen_letter = self.field.letters_eaten[self.index_letter]
             for callback in self.callbacks:
                 callback()
             return self.chosen_letter
@@ -150,13 +154,13 @@ class Snakegame:
     def process_press(self, key):
         match key:
             case keyboard.Key.left:
-                self.direction = (-1, 0)
-            case keyboard.Key.up:
                 self.direction = (0, -1)
+            case keyboard.Key.up:
+                self.direction = (-1, 0)
             case keyboard.Key.right:
-                self.direction = (1, 0)
-            case keyboard.Key.down:
                 self.direction = (0, 1)
+            case keyboard.Key.down:
+                self.direction = (1, 0)
 
     def start_rules(self) -> int:
         print(rules)
@@ -170,12 +174,13 @@ class Snakegame:
     def step_game(self):
         self.field.move_snake(self.direction)
         self.field.generate_apples_game()
+        self.field.generate_hangman_apple()
 
     def messages(self):
-        if self.field.is_lost():
+        if self.field.snake.snake_die():
             return 'Game Over'
-        if self.game == 2 and self.field.counter() == 3:
-            return ('Eaten letters: ', ', '.join(self.field.return_eaten()),
+        if self.game == 2 and self.field.letters_counter == 3:
+            return ('Eaten letters: ', ', '.join(self.field.letters_eaten), ' ',
                     'Enter the number of the letter you selected')
 
     def print(self):
@@ -197,21 +202,28 @@ class Snakegame:
                     while self.game == 1:
                         self.step_start()
                         self.print()
-                        if self.field.counter() == 3:
-                            self.field.delete_apple()
+                        if self.field.letters_counter == 3:
+                            self.field.apples.pop()
+                            if self.field.snake.snake_die():
+                                break
                             if self.start_rules() == 1:
-                                self.field.clear_eaten()
+                                self.field.clear_stats()
                                 self.game += 1
                             else:
                                 print(wrong_input)
                                 continue
+                        time.sleep(0.3)
                     while self.game == 2:
                         self.step_game()
                         self.print()
-                        if self.field.counter() == 3:
+                        if self.field.letters_counter == 3:
                             self.choose_letter()
-                            self.field.clear_eaten()
-                    time.sleep(0.3)
+                            self.field.clear_stats()
+                        time.sleep(0.3)
+                        if self.field.snake.snake_die():
+                            break
+                    if self.field.snake.snake_die():
+                        break
             else:
                 print(wrong_input)
 
