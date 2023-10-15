@@ -2,6 +2,7 @@ import time
 from threading import Lock
 from common.util import clear_terminal, terminal_size
 from common.printer import FieldType, Printer
+import sys
 
 
 class MultiPrinter:
@@ -21,6 +22,8 @@ class MultiPrinter:
         self.lock.release()
 
     def print_fields(self):
+        if sys.stdin.isatty():
+            time.sleep(3)
         if self.direction == 'v':
             fields_strings = [
                 '\n'.join([
@@ -45,3 +48,17 @@ class MultiPrinter:
         self.lock.acquire()
         print(matrix)
         self.lock.release()
+
+    def run(self):
+        while True:
+            clear_terminal()
+            self.print_fields()
+            time.sleep(self.sleep_delta)
+
+    def create_printer(self, game_id: int) -> Printer:
+        class PrinterProxy(Printer):
+            # noinspection PyMethodParameters
+            def print_field(proxy, field: FieldType):
+                self.update_field(game_id, field)
+
+        return PrinterProxy()

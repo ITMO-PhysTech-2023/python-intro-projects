@@ -2,6 +2,10 @@ from typing import Callable
 from pynput import keyboard
 import time
 from random import randint
+
+import sys
+sys.path.insert(1, 'C:/Users/LIZA/PycharmProjects/python-intro-projects/hang-snake/')
+
 from common.providers import LetterProvider, RandomLetterProvider, SecretLetterProvider
 from common.rules import first_message, wrong_input, rules
 from common.printer import DefaultPrinter, Printer
@@ -136,12 +140,12 @@ class Snakegame:
         self.callbacks = []
 
         self.flag_end = False
-        self.game = 1
+        self.game = 0
 
     def choose_letter(self):
-        self.index_letter = int(input()) - 1
-        if self.index_letter <= 2:
-            self.chosen_letter = self.field.letters_eaten[self.index_letter]
+        self.index_letter = int(input())
+        if self.index_letter <= 3:
+            self.chosen_letter = self.field.letters_eaten[self.index_letter-1]
             for callback in self.callbacks:
                 callback()
             return self.chosen_letter
@@ -163,7 +167,6 @@ class Snakegame:
                 self.direction = (1, 0)
 
     def start_rules(self) -> int:
-        print(rules)
         resume = int(input())
         return resume
 
@@ -182,6 +185,10 @@ class Snakegame:
         if self.game == 2 and self.field.letters_counter == 3:
             return ('Eaten letters: ', ', '.join(self.field.letters_eaten), ' ',
                     'Enter the number of the letter you selected')
+        if self.field.letters_counter == 3 and self.game == 1:
+            return rules
+        if self.game == 0:
+            return first_message
 
     def print(self):
         extra_lines = []
@@ -194,9 +201,10 @@ class Snakegame:
 
     def run(self):
         with keyboard.Listener(on_press=self.process_press):
-            print(first_message)
+            self.print()
             start = int(input())
             if start == 1:
+                self.game +=1
                 while True:
                     clear_terminal()
                     while self.game == 1:
