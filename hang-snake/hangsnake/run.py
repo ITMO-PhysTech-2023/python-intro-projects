@@ -43,12 +43,26 @@ class Apple:
                                justify=CENTER, font="Verdana 14", fill="black", tags="appletext")
 
 
+class Refresher:
+    def __init__(self):
+        gen = False
+        while not gen:
+            self.x = randint(0, 19) * OBJ_SIDE
+            self.y = randint(0, 11) * OBJ_SIDE
+            gen = True
+            for apple in apples:
+                if self.x == apple.x and self.y == apple.y:
+                    gen = False
+        self.coords = [self.x, self.y]
+        canvas.create_rectangle(self.x, self.y, self.x + OBJ_SIDE, self.y + OBJ_SIDE, fill="yellow", tags="refresher")
+        canvas.create_text(self.x + OBJ_SIDE / 2, self.y + OBJ_SIDE / 2, text="R",
+                           justify=CENTER, font="Verdana 14", fill="black", tags="ref")
 class Hangsnakegame:  # Переписано под ООП
     def __init__(self):
         pass
 
     @staticmethod
-    def move(snake, apples):
+    def move(snake, apples, refresher):
         eaten = False
         Hangsnakegame.hang()
         x, y = snake.coords[0]
@@ -69,6 +83,13 @@ class Hangsnakegame:  # Переписано под ООП
                 Hangsnakegame.hangmanmove(apple.letter)
                 apples.append(Apple())
                 eaten = True
+        if x == refresher.coords[0] and y == refresher.coords[1]:
+            apples.clear()
+            apples = [Apple(), Apple(), Apple()]
+            canvas.delete("refresher")
+            canvas.delete("ref")
+            refresher = Refresher()
+            eaten = True
         if not eaten:
             del snake.coords[-1]
             canvas.delete(snake.parts[-1])
@@ -83,7 +104,7 @@ class Hangsnakegame:  # Переписано под ООП
         if Hangsnakegame.check_collisions():
             Hangsnakegame.game_over()
         else:
-            window.after(GAME_SPEED, Hangsnakegame.move, snake, apples)
+            window.after(GAME_SPEED, Hangsnakegame.move, snake, apples, refresher)
 
     @staticmethod
     def change_direction(new_direction):
@@ -122,7 +143,14 @@ class Hangsnakegame:  # Переписано под ООП
                            justify=CENTER, font="Verdana 20", fill="white")
         canvas.create_text(350, 240, text="Word: {}".format(SECRET),
                            justify=CENTER, font="Verdana 20", fill="white")
+        gameover = Button(text='Выйти из игры',
+                               command = Hangsnakegame.game_exit)
+        canvas.create_window(350, 280, window=gameover, tags="gameover")
 
+    @staticmethod
+    def game_exit():
+        global gamestatus
+        gamestatus = 4
     @staticmethod
     def correct_answer(letter):  # Добавление правильной буквы в поле ответа
         new_guess_field = ''
@@ -168,7 +196,7 @@ class Hangsnakegame:  # Переписано под ООП
 
     @staticmethod
     def run():
-        Hangsnakegame.move(snake, apples)
+        Hangsnakegame.move(snake, apples, refresher)
         canvas.pack()  # Отрисовка поверх окна
         canvashang.pack()
 
@@ -210,6 +238,7 @@ canvas = Canvas(window, bg="black", height=HEIGHT, width=WIDTH)
 canvashang = Canvas(window, bg="white", height=280, width=WIDTH)
 snake = Snake()
 apples = [Apple(), Apple(), Apple()]
+refresher = Refresher()
 game = Hangsnakegame()
 
 if gamestatus == 3:

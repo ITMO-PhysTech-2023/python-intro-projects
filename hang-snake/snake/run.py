@@ -100,6 +100,14 @@ class SnakeGame:  #Переписано под ООП
         canvas.create_text(350, 330,
                            text="Score: {}".format(score),
                            justify=CENTER, font="Verdana 20", fill="white")
+        gameover = Button(text='Выйти из игры',
+                          command=SnakeGame.game_exit)
+        canvas.create_window(350, 370, window=gameover, tags="gameover")
+
+    @staticmethod
+    def game_exit():
+        global gamestatus
+        gamestatus = 4
 
     @staticmethod
     def run():

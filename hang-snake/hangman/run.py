@@ -93,6 +93,14 @@ class HangmanGame:
                                text=f"Answer: {SECRET}",
 
                                justify=CENTER, font="Verdana 14")
+            gameover = Button(text='Выйти из игры',
+                              command=HangmanGame.game_exit)
+            canvas.create_window(350, 610, window=gameover, tags="gameover")
+
+    @staticmethod
+    def game_exit():
+        global gamestatus
+        gamestatus = 4
 
     @staticmethod
     def run():

@@ -49,9 +49,12 @@ canvas.create_window(350, 620, window=buttonhangman, tags="buttonhangman")
 buttoncombo = Button(text='Играть в змейку + виселицу',
                            command=playcombo)
 canvas.create_window(584, 620, window=buttoncombo, tags="buttoncombo")
-canvas.create_text(584, 300,
-                   text="Альфа-версия",
-                   justify=CENTER, font="Verdana 14", tags="enter_text")
+canvas.create_line(550, 350, 600, 350, width=3)
+canvas.create_line(575, 350, 575, 200, width=3)
+canvas.create_line(575, 200, 625, 200, width=3)
+canvas.create_line(625, 200, 625, 250, width=1)
+canvas.create_rectangle(615, 250, 635, 270, fill="green")
+canvas.create_rectangle(615, 270, 635, 290, fill="green")
 # По нажатию кнопки запускаем соответствующую игру
 while gamestatus == 0:
     canvas.pack()
