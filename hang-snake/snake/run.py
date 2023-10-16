@@ -2,10 +2,6 @@ from typing import Callable
 from pynput import keyboard
 import time
 from random import randint
-
-import sys
-sys.path.insert(1, 'C:/Users/LIZA/PycharmProjects/python-intro-projects/hang-snake/')
-
 from common.providers import LetterProvider, RandomLetterProvider, SecretLetterProvider
 from common.rules import first_message, wrong_input, rules
 from common.printer import DefaultPrinter, Printer
@@ -52,6 +48,7 @@ class Field:
 
         self.letters_on_field = ['a', 'a', 'a', 'a', 'a']
         self.letters_eaten = []
+        self.discarded_letters = []
         self.hangman_letter_on_field = None
 
         self.eat = False
@@ -70,7 +67,12 @@ class Field:
 
     def update_apple(self, x: int):
         self.apples[x] = self.random_position()
-        self.letters_on_field[x] = self.provider_random.get_next_letter()
+        while True:
+            self.letters_on_field[x] = self.provider_random.get_next_letter()
+            if self.letters_on_field[x] in self.discarded_letters:
+                continue
+            else:
+                break
 
     def eating_apple(self, x: int):
         self.eat = True
@@ -83,7 +85,13 @@ class Field:
             self.eat = True
             self.hangman_apple = self.random_position()
             self.letters_eaten.append(self.hangman_letter_on_field)
-            self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
+            while True:
+                self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
+                if self.hangman_letter_on_field in self.discarded_letters or\
+                        self.hangman_letter_on_field in self.letters_on_field:
+                    continue
+                else:
+                    break
 
     def generate_apples_start(self):
         for i in range(4):
@@ -111,7 +119,12 @@ class Field:
         for i in range(4):
             self.update_apple(i)
         self.hangman_apple = self.random_position()
-        self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
+        while True:
+            self.hangman_letter_on_field = self.provider_hangman.get_next_letter()
+            if self.hangman_letter_on_field in self.discarded_letters:
+                continue
+            else:
+                break
 
     def build_matrix(self):
         matrix = [
@@ -135,7 +148,7 @@ class Snakegame:
         self.direction = (1, 0)
         self.printer = printer
 
-        self.index_letter = None
+        self.index_letter = 0
         self.chosen_letter = None
         self.callbacks = []
 
@@ -143,14 +156,17 @@ class Snakegame:
         self.game = 0
 
     def choose_letter(self):
-        self.index_letter = int(input())
-        if self.index_letter <= 3:
-            self.chosen_letter = self.field.letters_eaten[self.index_letter-1]
-            for callback in self.callbacks:
-                callback()
-            return self.chosen_letter
-        else:
-            print(wrong_input)
+        while True:
+            self.index_letter = int(input())
+            if self.index_letter <= 3:
+                self.chosen_letter = self.field.letters_eaten[self.index_letter-1]
+                self.field.discarded_letters.append(self.chosen_letter)
+                for callback in self.callbacks:
+                    callback()
+                self.index_letter = 0
+                break
+            else:
+                print(wrong_input)
 
     def add_object_eaten_callback(self, callback: Callable[[str], ...]):
         self.callbacks.append(callback)
@@ -189,6 +205,8 @@ class Snakegame:
             return rules
         if self.game == 0:
             return first_message
+        while self.index_letter > 3:
+            return wrong_input
 
     def print(self):
         extra_lines = []
@@ -204,7 +222,7 @@ class Snakegame:
             self.print()
             start = int(input())
             if start == 1:
-                self.game +=1
+                self.game += 1
                 while True:
                     clear_terminal()
                     while self.game == 1:
@@ -232,6 +250,7 @@ class Snakegame:
                             break
                     if self.field.snake.snake_die():
                         break
+                    time.sleep(0.3)
             else:
                 print(wrong_input)
 

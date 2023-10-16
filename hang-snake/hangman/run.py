@@ -1,10 +1,6 @@
 from common.printer import DefaultPrinter, Printer
 # from common.util import clear_terminal
-from common.providers import LetterProvider, RandomLetterProvider
-
-
-def create_secret():
-    return 'cat'
+from common.providers import LetterProvider, RandomLetterProvider, create_secret
 
 
 FINAL_FIELD = r'''

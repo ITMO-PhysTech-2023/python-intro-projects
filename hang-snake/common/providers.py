@@ -17,8 +17,10 @@ class SecretLetterProvider(LetterProvider):
         return create_secret()[random.randint(0, len(create_secret())-1)]
 
 
-def create_secret():
-    return 'cat'
+def create_secret() -> str:
+    english_words = ['capybara', 'elephant', 'giraffe', 'chimpanzee', 'horse', 'monkey', 'scorpion',
+                      'chicken', 'jaguar', 'chameleon', 'crocodile']
+    return english_words[random.randint(0, len(english_words) - 1)]
 
 
 class QueueProvider(LetterProvider):

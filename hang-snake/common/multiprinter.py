@@ -1,8 +1,8 @@
-import time
 from threading import Lock
-from common.util import clear_terminal, terminal_size
+from common.util import clear_terminal
 from common.printer import FieldType, Printer
 import sys
+import time
 
 
 class MultiPrinter:
@@ -12,7 +12,6 @@ class MultiPrinter:
         self.fields = [[[]] for _ in range(game_count)]
         self.lock = Lock()
         self.direction = direction
-
     def update_field(self, game_id: int, new_field: FieldType):
         width = max([len(row) for row in new_field])
         for i, row in enumerate(new_field):
@@ -22,8 +21,6 @@ class MultiPrinter:
         self.lock.release()
 
     def print_fields(self):
-        if sys.stdin.isatty():
-            time.sleep(3)
         if self.direction == 'v':
             fields_strings = [
                 '\n'.join([
@@ -62,3 +59,4 @@ class MultiPrinter:
                 self.update_field(game_id, field)
 
         return PrinterProxy()
+

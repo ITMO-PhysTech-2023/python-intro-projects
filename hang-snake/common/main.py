@@ -1,7 +1,7 @@
 import threading
 from threading import Thread
-import sys
-sys.path.insert(1, 'C:/Users/LIZA/PycharmProjects/python-intro-projects/hang-snake/')
+# import sys
+# sys.path.insert(1, 'C:/Users/LIZA/PycharmProjects/python-intro-projects/hang-snake/')
 from hangman.run import Hangmangame
 from snake.run import Snakegame
 from providers import QueueProvider
