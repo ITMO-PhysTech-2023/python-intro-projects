@@ -120,8 +120,9 @@ class GameSnake:
                 time.sleep(self.wait_time)
 
 
-wait_time = 0.3
-width = 15
-height = 15
-game = GameSnake(height, width, wait_time)
-game.run()
+if __name__ == '__main__':
+    wait_time = 0.3
+    width = 15
+    height = 15
+    game = GameSnake(height, width, wait_time)
+    game.run()

@@ -145,8 +145,8 @@ class GameHangman:
                         break
 
 
+if __name__ == '__main__':
+    SelectInput = LetterInputByHands()
+    play = GameHangman(SelectInput, 1)
+    play.process()
 
-
-SelectInput = LetterInputByHands()
-play = GameHangman(SelectInput, 1)
-play.process()
