@@ -1,10 +1,10 @@
 import time
+import vars
 from common.util import clear_terminal
 from pynput import keyboard
-from LetterInput import Letter_Input, LetterInputByHands, LetterInputByRandom
+from hangman.LetterInput import LetterInputByHands, LetterInputByRandom
+from vars import repeat, proposal_repeat
 
-a = 0
-secret_word = input('enter secret word: ').lower()
 lose_field = r'''
    +----+
    |    |
@@ -21,14 +21,6 @@ loser = [
     (5, 2),
     (5, 4)
 ]
-
-
-def repeat(key):
-    global a
-    if key == keyboard.Key.space:
-        a = 'continue'
-    else:
-        a = 'break'
 
 
 class Field:
@@ -51,11 +43,10 @@ class Field:
 
 
 class GameHangman:
-    def __init__(self, letter_input: Letter_Input, timeout):
+    def __init__(self, letter_input, timeout):
         self.field = Field()
-        self.secret = secret_word
+        self.secret = vars.secret_word
         self.enter_field = ['_' for _ in range(len(self.secret))]
-        self.last_letter = []
         self.LetterInput = letter_input
         self.timeout = timeout
 
@@ -65,7 +56,7 @@ class GameHangman:
             if len(letter) != 1 or ord(letter) < ord('a') or ord(letter) > ord('z'):
                 print('Error of the enter')
                 continue
-            elif letter in self.last_letter:
+            elif letter in vars.last_letter:
                 print('This letter was already entered. Try other.')
                 continue
             else:
@@ -81,8 +72,9 @@ class GameHangman:
         else:
             self.field.active_fail()
 
-    def add_letter(self, letter):
-        self.last_letter.append(letter)
+    def add_letter(self):
+        vars.init_var()
+        vars.last_letter.append(self.get_letter())
 
     def if_win(self):
         return '_' not in self.enter_field
@@ -91,31 +83,32 @@ class GameHangman:
         return len(loser) == self.field.fails_count
 
     def demonstrate(self):
-        clear_terminal()
-        self.field.print()
-        print(''.join(self.enter_field))
+        if __name__ == '__main__':
+            clear_terminal()
+            self.field.print()
+            print(''.join(self.enter_field))
+        else:
+            vars.init_var()
+            vars.field_hangman = self.field.picture
+            vars.field_enter_p = self.enter_field
 
     def actions(self):
-        letter = self.get_letter()
-        self.check_letter(letter)
-        self.add_letter(letter)
+        self.check_letter(self.get_letter())
+        self.add_letter()
         if SelectInput == LetterInputByRandom():
             time.sleep(self.timeout)
 
     def update(self):
-        self.last_letter = []
-        global a, secret_word
-        a = 0
-        secret_word = input('enter secret word: ').lower()
-        self.secret = secret_word
+        vars.init_var()
+        vars.init_input_var()
+        vars.last_letter = []
+        vars.a = 0
+        vars.secret_word = input('enter secret word: ').lower()
+        self.secret = vars.secret_word
         self.enter_field = ['_' for _ in range(len(self.secret))]
         for i in loser:
             self.field.picture[i[0]][i[1]] = ' '
         self.field.fails_count = 0
-
-    def proposal_repeat(self):
-        print()
-        print('If you want to try again press to space. If you want to stop press other')
 
     def process(self):
         while True:
@@ -123,10 +116,10 @@ class GameHangman:
             self.actions()
             if self.if_lose():
                 print('You lose! Congratulations!')
-                self.proposal_repeat()
+                proposal_repeat()
                 with keyboard.Listener(on_press=repeat):
                     time.sleep(3)
-                    if a == 'continue':
+                    if vars.a == 'continue':
                         self.update()
                         continue
                     else:
@@ -135,10 +128,10 @@ class GameHangman:
                 print(''.join(self.enter_field))
                 print()
                 print('You won! Congratulations!')
-                self.proposal_repeat()
+                proposal_repeat()
                 with keyboard.Listener(on_press=repeat):
                     time.sleep(3)
-                    if a == 'continue':
+                    if vars.a == 'continue':
                         self.update()
                         continue
                     else:
@@ -149,4 +142,3 @@ if __name__ == '__main__':
     SelectInput = LetterInputByHands()
     play = GameHangman(SelectInput, 1)
     play.process()
-
