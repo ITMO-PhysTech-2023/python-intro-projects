@@ -1,6 +1,7 @@
 from pynput import keyboard
 
-
+hard_level = int(input('enter level of hard: '))
+secret_word = input('enter secret word: ').lower()
 a = 0
 import_letter = None
 last_letter = []
@@ -8,8 +9,6 @@ to_stop = None
 field_snake = None
 field_hangman = None
 field_enter_p = None
-hard_level = int(input('enter level of hard: '))
-secret_word = input('enter secret word: ').lower()
 
 
 def repeat(key):
