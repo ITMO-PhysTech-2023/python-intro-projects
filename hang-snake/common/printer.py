@@ -4,7 +4,6 @@ from abc import abstractmethod
 
 import vars
 from common.util import clear_terminal
-from vars import field_hangman, field_snake, field_enter_p
 
 
 class Print:

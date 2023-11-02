@@ -2,12 +2,15 @@ import time
 import vars
 from common.util import clear_terminal
 from pynput import keyboard
-from random import randint
+from random import randint, randrange
 from vars import repeat, proposal_repeat
 
 
 def generate_position(width, height):
     return randint(0, width - 1), randint(0, height - 1)
+
+
+rest_of_word = list(vars.secret_word)
 
 
 def generate_diff_pos(width, height):
@@ -49,7 +52,7 @@ class Letters:
         self.right_letter = generate_position(width, height)
         self.random_letter = generate_diff_pos(width, height)
         self.symbol_tl = vars.secret_word[randint(0, len(vars.secret_word) - 1)]
-        self.symbol_fl = [generate_letter()[randint(0, len(generate_letter()))] for row in
+        self.symbol_fl = [generate_letter()[randrange(len(generate_letter()))] for row in
                           range(vars.hard_level - 1)]
 
 
@@ -72,7 +75,7 @@ class Field:
         self.field[self.Letters_f.right_letter[0]][self.Letters_f.right_letter[1]] = self.Letters_f.symbol_tl
 
     def put_false_letter(self):
-        for i in vars.hard_level-1:
+        for i in range(vars.hard_level - 1):
             self.field[self.Letters_f.random_letter[i][0]][self.Letters_f.random_letter[i][1]] = (
                 self.Letters_f.symbol_fl)[i]
 
@@ -117,7 +120,9 @@ class GameSnake:
 
     @staticmethod
     def not_full_word():
-        rest_of_word = str(list(vars.secret_word).pop(vars.last_letter))
+        global rest_of_word
+        for i in range(rest_of_word.count(vars.last_letter)):
+            rest_of_word.remove(vars.last_letter)
         return rest_of_word
 
     def create_new_pos(self):
@@ -125,19 +130,19 @@ class GameSnake:
             self.Letter.right_letter = generate_position(self.width_field, self.height_field)
             self.Letter.random_letter = generate_diff_pos(self.width_field, self.height_field)
         self.Letter.symbol_tl = self.not_full_word()[randint(0, len(self.not_full_word()) - 1)]
-        self.Letter.symbol_fl = [generate_letter()[randint(0, len(generate_letter()))] for row in
-                                 vars.hard_level - 1]
+        self.Letter.symbol_fl = [generate_letter()[randrange(len(generate_letter()))] for row in
+                                 range(vars.hard_level - 1)]
 
     def eat(self):
         self.Snake.snake.insert(0, self.Snake.new_elem)
         vars.init_var()
         if self.check_to_eat():
-            self.create_new_pos()
-            self.Snake.body_snake += 1
             if self.eat_tl():
                 vars.import_letter = self.Letter.symbol_tl
             else:
                 vars.import_letter = self.Letter.symbol_fl[self.Letter.random_letter.index(self.Snake.new_elem)]
+            self.create_new_pos()
+            self.Snake.body_snake += 1
         else:
             self.Snake.snake.pop(-1)
 
@@ -155,6 +160,7 @@ class GameSnake:
         else:
             self.Field.put_snake()
         self.Field.put_true_letter()
+        self.Field.put_false_letter()
 
     def run(self):
         vars.init_var()

@@ -52,15 +52,23 @@ class GameHangman:
 
     def get_letter(self):
         while True:
-            letter = self.LetterInput.input_letter()
-            if len(letter) != 1 or ord(letter) < ord('a') or ord(letter) > ord('z'):
-                print('Error of the enter')
-                continue
-            elif letter in vars.last_letter:
-                print('This letter was already entered. Try other.')
-                continue
+            if __name__ == '__main__':
+                letter = self.LetterInput.input_letter()
+                if len(letter) != 1 or ord(letter) < ord('a') or ord(letter) > ord('z'):
+                    print('Error of the enter')
+                    continue
+                elif letter in vars.last_letter:
+                    print('This letter was already entered. Try other.')
+                    continue
+                else:
+                    break
             else:
-                break
+                letter = vars.import_letter
+                if letter in vars.last_letter:
+                    print('This letter was already entered. Try other.')
+                    continue
+                else:
+                    break
 
         return letter
 
@@ -113,6 +121,8 @@ class GameHangman:
     def process(self):
         while True:
             self.demonstrate()
+            if self.get_letter() is None:
+                continue
             self.actions()
             if self.if_lose():
                 print('You lose! Congratulations!')
