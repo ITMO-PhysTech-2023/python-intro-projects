@@ -49,15 +49,16 @@ class GameHangman:
         self.enter_field = ['_' for _ in range(len(self.secret))]
         self.LetterInput = letter_input
         self.timeout = timeout
+        self.letter = ''
 
     def get_letter(self):
         while True:
             if __name__ == '__main__':
-                letter = self.LetterInput.input_letter()
-                if len(letter) != 1 or ord(letter) < ord('a') or ord(letter) > ord('z'):
+                self.letter = self.LetterInput.input_letter()
+                if len(self.letter) != 1 or ord(self.letter) < ord('a') or ord(self.letter) > ord('z'):
                     print('Error of the enter')
                     continue
-                elif letter in vars.last_letter:
+                elif self.letter in vars.last_letter:
                     print('This letter was already entered. Try other.')
                     continue
                 else:
@@ -70,19 +71,17 @@ class GameHangman:
                 else:
                     break
 
-        return letter
-
-    def check_letter(self, letter):
-        if letter in self.secret:
+    def check_letter(self):
+        if self.letter in self.secret:
             for i in range(len(self.secret)):
-                if self.secret[i] == letter:
-                    self.enter_field[i] = letter
+                if self.secret[i] == self.letter:
+                    self.enter_field[i] = self.letter
         else:
             self.field.active_fail()
 
     def add_letter(self):
         vars.init_var()
-        vars.last_letter.append(self.get_letter())
+        vars.last_letter.append(self.letter)
 
     def if_win(self):
         return '_' not in self.enter_field
@@ -101,9 +100,9 @@ class GameHangman:
             vars.field_enter_p = self.enter_field
 
     def actions(self):
-        self.check_letter(self.get_letter())
+        self.check_letter()
         self.add_letter()
-        if SelectInput == LetterInputByRandom():
+        if __name__ == '__main__' and SelectInput == LetterInputByRandom():
             time.sleep(self.timeout)
 
     def update(self):
@@ -112,6 +111,7 @@ class GameHangman:
         vars.last_letter = []
         vars.a = 0
         vars.secret_word = input('enter secret word: ').lower()
+        self.letter = ''
         self.secret = vars.secret_word
         self.enter_field = ['_' for _ in range(len(self.secret))]
         for i in loser:
@@ -121,8 +121,7 @@ class GameHangman:
     def process(self):
         while True:
             self.demonstrate()
-            if self.get_letter() is None:
-                continue
+            self.get_letter()
             self.actions()
             if self.if_lose():
                 print('You lose! Congratulations!')

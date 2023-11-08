@@ -1,5 +1,4 @@
 from threading import Thread
-from pynput import keyboard
 from snake.run import GameSnake
 from hangman.run import GameHangman
 from common.printer import Print, HorizontalPrint, VerticalPrint
@@ -14,7 +13,7 @@ width_snake_field = 15
 
 snake_game = GameSnake(height_snake_field, width_snake_field, 0.3)
 hangman_game = GameHangman(vars.import_letter, None)
-printer = HorizontalPrint
+printer = HorizontalPrint()
 
 thread_of_snake = Thread(target=snake_game.run())
 thread_of_hangman = Thread(target=hangman_game.process())
