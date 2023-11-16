@@ -1,78 +1,110 @@
+import time
 from common.util import clear_terminal
-import random
-import string
+from hangman.provider import LetterProvider, KeyboardLetterProvider, RandomLetterProvider
+from printer.secret import Secret
 
-def create_secret():
-    l = 10
-    gen = ''.join(random.choices(string.ascii_lowercase, k=l))
-    print(str(gen))
-    return gen
 
-SECRET = create_secret()
 
-n = len(SECRET)
-
-GUESSED = ['_' for _ in range(n)]
 
 FINAL_FIELD = r'''
    +----+
    |    |
    o    |
-  /|\   |
+  /|\   | 
   / \   |
 _______/|\_
 '''.split('\n')
 
-FIELD = FINAL_FIELD
-
-HUMAN=[
-    (3,3),
-    (4,3),
-    (4,2),
-    (4,4),
-    (5,2),
-    (5,4)
+HUMAN = [
+    (3, 3),
+    (4, 3),
+    (4, 2),
+    (4, 4),
+    (5, 2),
+    (5, 4)
 ]
+HUMAN_PARTS = len(HUMAN)
 
-FIELD= [
-    list(row)
-    for row in FINAL_FIELD
-]
 
-human_parts =0
+class Field:
+    def __init__(self):
+        self.remaining_fails = HUMAN_PARTS
+        self.matrix = [
+            list(row)
+            for row in FINAL_FIELD
+        ]
+        for row, col in HUMAN:
+            self.matrix[row][col] = ' '
+    def print(self):
+        for row in self.matrix:
+            print(''.join(row))
+        print()
 
-for cell in HUMAN:
-    FIELD[cell[0]][cell[1]] =' '
+    def add_human_part(self):
+        row, col = HUMAN[-self.remaining_fails]
+        self.remaining_fails -= 1
+        self.matrix[row][col] = FINAL_FIELD[row][col]
 
-while True:
 
-    # 1
-    clear_terminal()
-    for row in FIELD:
-        print(''.join(row))
+class HangmanGame:
+    def __init__(self, letter_provider: LetterProvider, secrword: Secret, step_sleep: int, let):
+        self.field = Field()
+        self.step_sleep = step_sleep
+        self.provider = letter_provider
+        self.secret = secrword.create_secret()
+        self.guessed = ['_' for _ in range(len(self.secret))]
+        self.red = (255, 0, 0)
+        self.let = let
+        self.count = 0
+    def read_guess(self) -> str:
+        while True:
+            letter = self.let[self.count]
+            if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
+                print('Invalid guess! Try again (enter a letter)')
+                continue
+            return letter
 
-    print(''.join(GUESSED))
+    def check_guess(self, letter: str):
 
-    # 2 and 3
-    letter = input('Enter your guess: ').lower()
-    if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
-        print('Invalid guess! Try again')
-        continue
-    # 4
-    if letter in SECRET:
-        for i in range(n):
-            if SECRET[i] == letter:
-                GUESSED[i] = letter
-    else:
-        cell = HUMAN[human_parts]
-        human_parts += 1
-        FIELD[cell[0]][cell[1]] = FINAL_FIELD[cell[0]][cell[1]]
+        if letter in self.secret:
+            for i in range(len(self.secret)):
+                if self.secret[i] == letter:
+                    self.guessed[i] = letter
+        else:
+            self.field.add_human_part()
 
-    clear_terminal()
-    # 5
-    if '_' not in GUESSED:
-        print('You won!')
-        break
-    if human_parts == len(HUMAN):
-        print('You lose!')
-        break
+    def is_won(self) -> bool:
+        return '_' not in self.guessed
+
+    def is_lost(self) -> bool:
+        return self.field.remaining_fails == 0
+
+    def step(self):
+        letter = self.read_guess()
+        self.check_guess(letter)
+        time.sleep(self.step_sleep)
+
+    def show(self):
+        clear_terminal()
+        self.field.print()
+        print(''.join(self.guessed))
+
+    def run(self):
+        #game_over = False
+        self.show()
+        for t in range(len(self.let)):
+            self.step()
+            if self.is_won():
+                self.show()
+                print('Cool! You won!')
+                # break
+            if self.is_lost():
+                 self.show()
+                 print('Wow, you lost! Sad :(')
+                 # break
+            self.show()
+            self.count+=1
+provider = RandomLetterProvider()
+secr = Secret()
+#game = HangmanGame(provider, secr,1)
+#game.run()
