@@ -1,0 +1,12 @@
+{
+  apis: [
+    {
+      name: 'openai',
+      key: '...'
+    },
+    {
+      name: 'yandex',
+      key: '...'
+    }
+  ]
+}
