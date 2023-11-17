@@ -8,7 +8,7 @@ from snake.run import AppleObject, EatableObject, SnakeGame
 
 ALPHA = map(chr, range(ord('a'), ord('z') + 1))
 
-printer = MultiPrinter(0.04, 2)
+printer = MultiPrinter(0.04, 2, direction='h')
 provider = QueueProvider()
 
 

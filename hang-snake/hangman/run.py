@@ -1,7 +1,7 @@
 import time
 
 from common.printer import DefaultPrinter, Printer
-from hangman.provider import LetterProvider, RandomLetterProvider
+from hangman.provider import KeyboardLetterProvider, LetterProvider, RandomLetterProvider
 
 
 def create_secret():
@@ -123,7 +123,8 @@ class HangmanGame:
 
 
 if __name__ == '__main__':
-    provider = RandomLetterProvider()
+    # provider = RandomLetterProvider()
+    provider = KeyboardLetterProvider()
     printer = DefaultPrinter()
     # printer = ReversePrinter()
     game = HangmanGame(provider, 0.5, printer)

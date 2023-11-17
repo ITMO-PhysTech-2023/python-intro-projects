@@ -17,9 +17,8 @@ class MultiPrinter:
         width = max([len(row) for row in new_field])
         for i, row in enumerate(new_field):
             new_field[i] += [' ' for _ in range(width - len(row))]
-        self.lock.acquire()
-        self.fields[game_id] = new_field
-        self.lock.release()
+        with self.lock:
+            self.fields[game_id] = new_field
 
     def print_fields(self):
         if self.direction == 'v':
