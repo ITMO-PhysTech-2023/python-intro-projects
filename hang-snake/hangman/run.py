@@ -66,7 +66,6 @@ class GameHangman:
             else:
                 letter = vars.import_letter
                 if letter in vars.last_letter:
-                    print('This letter was already entered. Try other.')
                     continue
                 else:
                     break

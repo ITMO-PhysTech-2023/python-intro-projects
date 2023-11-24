@@ -1,7 +1,7 @@
 from threading import Thread
 from snake.run import GameSnake
 from hangman.run import GameHangman
-from common.printer import Print, HorizontalPrint, VerticalPrint
+from common.printer import HorizontalPrint, VerticalPrint
 import vars
 
 
@@ -17,7 +17,7 @@ printer = HorizontalPrint()
 
 thread_of_snake = Thread(target=snake_game.run())
 thread_of_hangman = Thread(target=hangman_game.process())
-thread_of_printer = Thread(target=printer.output_to_screen(0.1, height_snake_field, width_snake_field))
+thread_of_printer = Thread(target=printer.output_to_screen(1, height_snake_field, width_snake_field))
 
 thread_of_snake.start()
 thread_of_hangman.start()
