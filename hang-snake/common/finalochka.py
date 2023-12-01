@@ -1,3 +1,6 @@
+from snake.testovayazmeya import score
+self_count=score
+print(self_count)
 import pygame
 import random
 SIZE=800
@@ -16,7 +19,7 @@ field4=pygame.image.load('5.png')
 field5=pygame.image.load('6.png')
 field6=pygame.image.load('7.png')
 human_parts = 0
-def print_text(message, x, y, font_color=('White'), font_type='Arial.ttf', font_size=50):
+def print_text(message, x, y, font_color=('Black'), font_type='Arial.ttf', font_size=50):
     font_type = pygame.font.Font(font_type, font_size)
     text = font_type.render(message, True, font_color, None)
     sc.blit(text, (x, y))
@@ -46,8 +49,10 @@ def display_word(word, guessed):
         else:
             display += '_'
         display += ' '
+    print_text('SELF COUNT:' + str(self_count), 50, 50, ('Black'), 'Arial.ttf',30)
     text = pygame.font.SysFont(None, 35).render(display, True, (0,0,0))
     sc.blit(text, (SIZE/6, 600))
+
 def get_word():
     word_list = ['capybara']
     return random.choice(word_list)

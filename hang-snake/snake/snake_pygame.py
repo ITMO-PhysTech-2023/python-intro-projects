@@ -1,6 +1,5 @@
 import pygame
 from random import randrange
-from hangman.hangOP import HangmanGame
 
 SIZE = 800  # размеры поля
 SIZE_body = 50  # шаг змеи
@@ -19,7 +18,7 @@ def print_text(message, x, y, font_color=('White'), font_type='Arial.ttf', font_
     sc.blit(text, (x, y))
 clock = pygame.time.Clock()
 while True:
-    sc.fill(pygame.Color(71, 167, 106))  # перед каждым след действием красит поле игры в черный
+    sc.fill(pygame.Color(71, 167, 106))  # перед каждым след действием красит поле игры в зеленый
     [(pygame.draw.rect(sc, pygame.Color('green'), (i, j, SIZE_body, SIZE_body))) for i, j in snake]
     pygame.draw.rect(sc, pygame.Color('red'), (*apple, SIZE_body, SIZE_body))
     x += x1 * SIZE_body  # движение змеи
@@ -60,6 +59,3 @@ while True:
             x1, y1 = -1, 0
         if key[pygame.K_d]:
             x1, y1 = 1, 0
-
-hangman = HangmanGame(0.5, score)
-hangman.run()

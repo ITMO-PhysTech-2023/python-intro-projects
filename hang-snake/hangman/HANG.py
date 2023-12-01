@@ -1,5 +1,6 @@
 import time
 from common.util import clear_terminal
+from snake.snake_pygame import score
 def create_secret():
     return 'capybara'
 SECRET = create_secret()
@@ -45,11 +46,11 @@ class Field2:
         a, b = HUMAN[self.humpar]
         self.FIELD[a][b] = FINAL_FIELD[a][b]
         self.humpar += 1
-
+life_count=score
 class HangmanGame:
-    def __init__(self, step_sleep: float):#, life_count: int):
+    def __init__(self, step_sleep: float, life_count: int):
         self.field = Field2()
-        #self.life_count = life_count
+        self.life_count = life_count
         self.step_sleep = step_sleep
         self.secret = create_secret()
         self.ch=ch
@@ -84,7 +85,7 @@ class HangmanGame:
         clear_terminal()
         self.field.print()
         print(''.join(self.guessed))
-        #print('SELF COUNT:'+selfcount)
+        print('SELF COUNT:'+life_count)
 
     def run(self):
         self.show()

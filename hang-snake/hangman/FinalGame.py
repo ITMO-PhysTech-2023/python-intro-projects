@@ -1,5 +1,8 @@
 import time
+import pygame
 from common.util import clear_terminal
+from snake import run
+print('ura')
 def create_secret():
     return 'capybara'
 SECRET = create_secret()
@@ -47,7 +50,7 @@ class Field2:
         self.humpar += 1
 
 class HangmanGame:
-    def __init__(self, step_sleep: float):#, life_count: int):
+    def __init__(self, step_sleep: float): #, life_count: int):
         self.field = Field2()
         #self.life_count = life_count
         self.step_sleep = step_sleep
@@ -63,10 +66,9 @@ class HangmanGame:
                     self.guessed[i] = letter
         else:
             if self.field!=self.final_field:
-                #self.field.add_human_part()
-                #if self.life_count!=0:
-                    #self.life_count-=1
-                #else:
+                if self.life_count!=0:
+                    self.life_count-=1
+                else:
                     self.field.add_human_part()
     def if_won(self) -> bool:
         return '_' not in self.guessed
@@ -84,7 +86,6 @@ class HangmanGame:
         clear_terminal()
         self.field.print()
         print(''.join(self.guessed))
-        #print('SELF COUNT:'+selfcount)
 
     def run(self):
         self.show()
@@ -100,7 +101,6 @@ class HangmanGame:
                 print('You lose!')
                 break
             self.show()
-
 game = HangmanGame(0.5)#,score)
 game.run()
 

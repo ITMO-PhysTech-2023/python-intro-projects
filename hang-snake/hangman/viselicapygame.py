@@ -38,19 +38,14 @@ def add_human_part(x):
         sc.blit(field5,(30,50))
     if x==5:
         sc.blit(field6,(30,50))
-def display_word(word, guessed):
-    display = ''
-    for letter in word:
-        if letter in guessed:
-            display += letter
+def check_guess(self, letter: str):
+        if letter in self.secret:
+            for i in range(len(self.secret)):
+                if self.secret[i] == letter:
+                    self.guessed[i] = letter
+            print_text(self.guessed,(50,50))
         else:
-            display += '_'
-        display += ' '
-    text = pygame.font.SysFont(None, 35).render(display, True, (0,0,0))
-    sc.blit(text, (SIZE/6, 600))
-def get_word():
-    word_list = ['capybara']
-    return random.choice(word_list)
+            add_human_part(human_parts)
 def input_letter():
     while True:
         for event in pygame.event.get():
@@ -60,37 +55,21 @@ def input_letter():
             if event.type == pygame.KEYDOWN:
                 if event.unicode.isalpha():
                     return event.unicode.lower()
-def check_letter(letter, word, guessed,human_parts):
-    if letter not in word:
-        add_human_part(human_parts)
-        return False
-    guessed.append(letter)
-    return True
-def has_won(word, guessed):
-    for letter in word:
-        if letter not in guessed:
-            return False
-    return True
-# Основной код игры
+
+def if_won(self) -> bool:
+    return '_' not in self.guessed
+def if_lose(self) -> bool:
+    if sc==field6:
+        return True
 def game():
-    game_over = False
-    word = get_word()
-    guessed = []
-    human_parts=0
-    while not game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        display_word(word, guessed)
-        letter = input_letter()
-        if not check_letter(letter, word, guessed,human_parts):
-            if human_parts == 5:
-                game_over = True
-            human_parts += 1
-        elif has_won(word, guessed):
-            game_over = True
-        pygame.display.update()
-    pygame.quit()
-    quit()
-game()
+    while True:
+        input_letter()
+        if if_won():
+            print_text('YOU WON',(50,30))
+            pygame.quit()
+        if if_lose():
+            print_text('YOU LOSE', (50, 30))
+            pygame.quit()
+
+
+
