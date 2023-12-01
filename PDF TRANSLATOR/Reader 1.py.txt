@@ -1,0 +1,30 @@
+﻿
+Evaluation Only. Created with Aspose.Words. Copyright 2003-2023 Aspose Pty Ltd.
+import aspose.words as aw
+from tkinter import *
+def output(event):
+s=ent.get()
+doc = aw.Document(s)
+name=str(s)+'.txt'
+doc.save(name)
+try:
+txt=open(s,"r",encoding="utf-8")
+content=txt.read()
+tex.delete(1.0,END)
+tex.insert(END, content)
+except:
+tex.delete(1.0,END)
+tex.insert(END,"Файл нема")
+
+root = Tk()
+root.title('PDF Reader')
+root.minsize(width=580, height=480)
+ent=Entry(root,width=20)
+but=Button(root, text='Открыть')
+tex=Text(root,width=80, height=30,font="Arial.14", wrap=WORD)
+ent.grid(row=0, column=0)
+but.grid(row=2, column=0)
+tex.grid(row=1, column=0)
+but.bind("<Button-1>", output)
+root.mainloop()
+Created with an evaluation copy of Aspose.Words. To discover the full versions of our APIs please visit: https://products.aspose.com/words/
