@@ -1,131 +1,78 @@
+import pygame
 import random
 
-# Список слов для угадывания
-word_list = ["яблоко", "банан", "змея", "итмо", "африка", "музыка"]
+# Инициализация Pygame
+pygame.init()
 
-# изображения виселицы
-hangman_images = [
-    """
-        _________
-       |         |
-       |
-       |
-       |
-       |
-    """,
-    """
-        _________
-       |         |
-       |         O
-       |
-       |
-       |
-    """,
-    """
-        _________
-       |         |
-       |         O
-       |         |
-       |
-       |
-    """,
-    """
-        _________
-       |         |
-       |         O
-       |        /|
-       |
-       |
-    """,
-    """
-        _________
-       |         |
-       |         O
-       |        /|\\
-       |
-       |
-    """,
-    """
-        _________
-       |         |
-       |         O
-       |        /|\\
-       |        /
-       |
-    """,
-    """
-        _________
-       |         |
-       |         O
-       |        /|\\
-       |        / \\
-       |
-    """
-]
+# Константы
+WIDTH, HEIGHT = 800, 600
+FPS = 60
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
+# Загрузка изображений виселицы
+hangman_images = [pygame.image.load(f"hangman{str(i)}.png") for i in range(7)]
+current_image = 0
 
-# Выбор случайного слова из списка
-def choose_word(word_list):
-    return random.choice(word_list)
+# Слова для угадывания
+words = ["pyton", "java", "class", "pygame", "snake", "hangman"]
 
+# Выбираем случайное слово
+word = random.choice(words)
 
-# Инициализация игры
-def initialize_game():
-    word_to_guess = choose_word(word_list)
-    guessed_letters = set()
-    incorrect_attempts = 0
-    return word_to_guess, guessed_letters, incorrect_attempts
+# Создаем список для хранения угаданных букв
+guessed_letters = []
 
+# Инициализация окна
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Виселица")
 
-# Отображение текущего состояния слова с угаданными буквами
-def display_word(word, guessed_letters):
-    display = ""
+# Функция для вывода текста на экран
+def draw_text(surf, text, size, x, y):
+    font = pygame.font.Font(None, size)
+    text_surface = font.render(text, True, BLACK)
+    text_rect = text_surface.get_rect()
+    text_rect.center = (x, y)
+    surf.blit(text_surface, text_rect)
+
+# Главный игровой цикл
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.KEYDOWN:
+            if event.key >= 97 and event.key <= 122:  # ASCII коды для букв 'a' до 'z'
+                letter = chr(event.key)
+                if letter not in guessed_letters:
+                    guessed_letters.append(letter)
+                    if letter not in word:
+                        current_image += 1
+
+    # Очистка экрана
+    screen.fill(WHITE)
+
+    # Рисуем виселицу
+    if current_image < 7:
+        screen.blit(hangman_images[current_image], (100, 100))
+
+    # Выводим угаданные буквы
+    display_word = ""
     for letter in word:
         if letter in guessed_letters:
-            display += letter
+            display_word += letter
         else:
-            display += "_"
-    return display
+            display_word += "_ "
+    draw_text(screen, display_word, 36, WIDTH // 2, 400)
 
+    # Проверка на победу или проигрыш
+    if current_image == 6:
+        draw_text(screen, "Вы проиграли! Правильное слово: " + word, 46, WIDTH // 2, 300)
+    elif "_" not in display_word:
+        draw_text(screen, "Вы победили!", 46, WIDTH // 2, 300)
 
-# Отображение текущего состояния виселицы
-def display_hangman(incorrect_attempts):
-    return hangman_images[incorrect_attempts]
+    pygame.display.flip()
 
-
-# Основная функция игры
-def hangman_game():
-    word_to_guess, guessed_letters, incorrect_attempts = initialize_game()
-    max_attempts = len(hangman_images) - 1
-
-    print("Добро пожаловать в игру 'Виселица'!")
-
-    while True:
-        print(display_hangman(incorrect_attempts))
-        print(display_word(word_to_guess, guessed_letters))
-
-        if "_" not in display_word(word_to_guess, guessed_letters):
-            print("Поздравляем, вы угадали слово: " + word_to_guess)
-            break
-
-        if incorrect_attempts >= max_attempts:
-            print("Вы проиграли. Загаданное слово было: " + word_to_guess)
-            break
-
-        guess = input("Угадайте букву: ").lower()
-
-        if len(guess) != 1 or not guess.isalpha():
-            print("Пожалуйста, введите одну букву.")
-            continue
-
-        if guess in guessed_letters:
-            print("Вы уже угадали эту букву.")
-        elif guess in word_to_guess:
-            guessed_letters.add(guess)
-        else:
-            guessed_letters.add(guess)
-            incorrect_attempts += 1
-
-
-if __name__ == "__main__":
-    hangman_game()
+# Завершение игры
+pygame.quit()

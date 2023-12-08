@@ -3,6 +3,7 @@ from pynput import keyboard
 from random import randrange
 
 WIDTH, HEIGHT = 700, 50
+WIDTH1, HEIGHT1 = 850,100
 # можно приделать конфиг-файл с параметрами
 direction = (1, 0)
 
