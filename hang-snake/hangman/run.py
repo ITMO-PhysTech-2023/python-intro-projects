@@ -5,7 +5,6 @@ from printer.secret import Secret
 
 
 
-
 FINAL_FIELD = r'''
    +----+
    |    |
