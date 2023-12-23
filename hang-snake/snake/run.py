@@ -107,8 +107,8 @@ class Snake:
         self.segments.insert(0, (x, y))
         if len(self.segments) > self.size:
             self.segments.pop()
-
-
+        if x >= WIDTH or x < 0 or y >= HEIGHT or y < 0:
+            Game.check_game_over(self)
 
     def change_direction(self, direction):
         if direction == 'left' and self.direction != 'right':
@@ -134,15 +134,16 @@ class Snake:
                         if guessed_word[i] == letter.letter:
                             beginword[i]=letter.letter
                             print(*beginword)
+                    self.size += 2
 
                 else:
-                    if self.attempt == 8:
-                        print('Вы прогиграли!')
+                    if self.attempt == 7:
+                        print('Вы проиграли!')
                         Game.check_game_over(self)
                     else:
                         print(self.FIELDS[self.attempt])
                         self.attempt += 1
-
+                    self.size += 2
                 letters.remove(letter)
 
 # Класс буквы
@@ -160,14 +161,17 @@ class Letter:
             self.color = RED
         else:
             self.color = WHITE
+
         pygame.draw.rect(surface, self.color, (self.x, self.y, 10, 10))
         font = pygame.font.Font(None, 20)
         text = font.render(self.letter, True, BLACK)
         surface.blit(text, (self.x, self.y))
 
+
 # Класс игры
 class Game:
     def __init__(self, surface):
+
         self.snake = Snake(surface)
         self.letters = []
         self.newletters=''
@@ -211,14 +215,7 @@ class Game:
         print(*self.beginword)
 
 
-    def check_game_over(self):
-        if  self.attempt==8:
-            return  True
 
-        if '_' not in self.beginword:
-            print("Вы выиграли!")
-            return True
-        return False
     def run(self):
         clock = pygame.time.Clock()
         run = True
@@ -236,12 +233,16 @@ class Game:
                         self.snake.change_direction('up')
                     elif event.key == pygame.K_DOWN:
                         self.snake.change_direction('down')
-            if self.check_game_over():
-                run = False
-
 
             self.snake.move()
-            self.snake.check_collision(self.letters, self.guessed_word,self.beginword,self.attempt)
+            self.snake.check_collision(self.letters, self.guessed_word,self.beginword,self.snake.attempt)
+            if self.snake.is_hanged:
+                print('Вы проиграли!')
+                break
+            if '_' not in self.beginword:
+                print("Вы выиграли!")
+                break
+
             self.surface.fill(BLACK)
 
             for letter in self.letters:
@@ -252,13 +253,18 @@ class Game:
             self.snake.draw()
 
             pygame.display.flip()
+
             clock.tick(10)
 
         pygame.quit()
+    def check_game_over(self):
+        self.snake.is_hanged = True
+
 
 # Создаем окно игры
 surface = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Змейка')
+
 # Запускаем игру
 game = Game(surface)
 game.run()
