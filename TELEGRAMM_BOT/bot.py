@@ -1,4 +1,6 @@
 import telebot
+import requests
+from bs4 import BeautifulSoup as b
 from telebot import types
 from currency_converter import CurrencyConverter
 bot=telebot.TeleBot('6818144100:AAEz4vGQvSOoMarvNxR5tAOpDkNeAryP340')
@@ -6,6 +8,33 @@ currency=CurrencyConverter()
 s=0
 started_value=''
 finished_value=''
+URL='https://cbr.ru/currency_base/daily/'
+r=requests.get(URL)
+soup=b(r.text, 'html.parser')
+v=soup.find_all('td')
+x=0
+a=[]
+clear_v=[]
+for c in range(len(v)):
+    if c%5!=0:
+        s=str(v[c]).replace('<td>','')
+        s = s.replace('</td>', '')
+        a.append(s)
+    else:
+        clear_v.append(a)
+        a=[]
+    #if x!=5:
+        #c=str(c).replace('<td>','')
+        #c=c.replace('</td>','')
+        #a.append(c)
+        #x+=1
+    #else:
+        #a.pop(0)
+        #clear_v.append(a)
+        #a=[]
+        #x = 0
+        #continue
+cursed=clear_v[1::]
 @bot.message_handler(commands=['start'])
 def begining(message):
     markup=types.InlineKeyboardMarkup()
@@ -19,6 +48,24 @@ def callback_message(callback):
     if callback.data=='trans':
         bot.send_message(callback.message.chat.id,'Введи сумму')
         bot.register_next_step_handler(callback.message, summa)
+    if callback.data=='currancy':
+        bot.send_message(callback.message.chat.id, 'Введи валюту')
+        bot.register_next_step_handler(callback.message, cur)
+def cur(message):
+    i=0
+    try:
+        c=str(message.text.upper())
+        #parser
+        while c!=cursed[i][0]:
+            i+=1
+        else:
+            bot.send_message(message.chat.id, f'Валюта: {cursed[i][0]}\nКоличество единиц: {cursed[i][1]}\nНазвание валюты: {cursed[i][2]}\nКурс относительно рубля: {cursed[i][3]}')
+            bot.send_message(message.chat.id, 'Для продолжения напиши: 1')
+            bot.register_next_step_handler(message, begining)
+    except Exception:
+        bot.send_message(message.chat.id, 'Неверная валюта, попробуй сначала')
+        bot.register_next_step_handler(message,cur)
+        return
 
 def summa(message):
     global s
@@ -49,7 +96,7 @@ def fin_value(message):
     try:
         finished_value=message.text.upper()
         res = currency.convert(s, started_value,finished_value)
-        bot.send_message(message.chat.id, f'{round(res, 2)}')
+        bot.send_message(message.chat.id, f'{s}{started_value}={round(res, 2)}{finished_value}')
         bot.send_message(message.chat.id, 'Для продолжения напиши: 1')
         bot.register_next_step_handler(message,begining)
         #bot.register_next_step_handler(message,translate)

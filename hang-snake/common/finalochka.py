@@ -5,11 +5,6 @@ import pygame
 import random
 SIZE=800
 pygame.init()
-def create_secret():
-    return 'capybara'
-SECRET = create_secret()
-n = len(SECRET)
-GUESSED = ['_' for _ in range(n)]
 sc = pygame.display.set_mode([SIZE, SIZE])
 start_field=pygame.image.load('1.png')
 field1=pygame.image.load('2.png')
