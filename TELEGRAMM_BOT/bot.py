@@ -1,9 +1,10 @@
 import telebot
 import requests
+from bot_id import c
 from bs4 import BeautifulSoup as b
 from telebot import types
 from currency_converter import CurrencyConverter
-bot=telebot.TeleBot('6818144100:AAEz4vGQvSOoMarvNxR5tAOpDkNeAryP340')
+bot=telebot.TeleBot(c)
 currency=CurrencyConverter()
 s=0
 started_value=''
@@ -23,17 +24,6 @@ for c in range(len(v)):
     else:
         clear_v.append(a)
         a=[]
-    #if x!=5:
-        #c=str(c).replace('<td>','')
-        #c=c.replace('</td>','')
-        #a.append(c)
-        #x+=1
-    #else:
-        #a.pop(0)
-        #clear_v.append(a)
-        #a=[]
-        #x = 0
-        #continue
 cursed=clear_v[1::]
 @bot.message_handler(commands=['start'])
 def begining(message):
