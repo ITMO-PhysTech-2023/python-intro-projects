@@ -1,9 +1,9 @@
 from PyPDF2 import PdfReader
 import tkinter as tk
 from tkinter import ttk
-from translate import Translator
+from pdf.printer.Translator import Translator
 
-translator = Translator(to_lang="ru")
+translator = Translator()
 
 def get():
     extension = ".pdf"
@@ -14,12 +14,11 @@ def get():
     text = page.extract_text()
     #translator = Translator(to_lang="ru")
     #translation = translator.translate(text)
-    #print(text)
     label.delete(1.0)
     label.insert(1.0, text)
 def textout():
     editor.delete("1.0",tk.END)
-    editor.insert(tk.END, translator.translate(label.selection_get()))
+    editor.insert(tk.END, translator.translate(str(label.selection_get()), "ru"))
 
 root = tk.Tk()  # создаем корневой объект - окно
 root.title("Original")  # устанавливаем заголовок окна
