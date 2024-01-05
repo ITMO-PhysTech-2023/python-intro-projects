@@ -1,9 +1,9 @@
 import telebot
 import requests
+from pdf.printer.Translator import Translator
 
 bot = telebot.TeleBot('6831422514:AAHii6u7ELVhfPh_XE-o7Gc76qhtAnhEhLQ')
-r = requests.get("https://sky.pro/media/kak-sozdat-telegram-bota-na-python/")
-print(r.headers['content-type'])
+translator = Translator()
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
 
@@ -13,8 +13,8 @@ def get_text_messages(message):
         bot.send_message(message.from_user.id, "Напиши привет")
 
     else:
-        r1 = requests.get(message.text)
-        bot.send_message(message.from_user.id, str(r1.status_code))
+        translator.translate(str(message.text),"ru")
+        bot.send_message(message.from_user.id, translator.translate(str(message.text),"ru"))
 
 
 bot.polling(none_stop=True, interval=0)
