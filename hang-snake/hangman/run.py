@@ -1,33 +1,9 @@
 from common.util import clear_terminal
+from hangman_game import Game
 
 
-def create_secret():
-    return 'capybara'
+my_hangman = Game()
+my_hangman.launching_the_game()
 
 
-SECRET = create_secret()
-n = len(SECRET)
-
-FINAL_FIELD = r'''
-   +----+
-   |    |
-   o    |
-  /|\   |
-  / \   |
-_______/|\_
-'''
-
-# здесь мы наверное хотим иметь исходное поле
-# и понимание, как оно меняется после каждого хода
-FIELD = FINAL_FIELD
-
-while True:
-    # make a move!
-    letter = input('Enter your guess: ')
-    if ...:
-        FIELD = ...  # если не угадали, то надо обновить поле
-    else:
-        ...  # мало ли, понадобится...
-
-    clear_terminal()
-    print(FIELD)
+clear_terminal()
