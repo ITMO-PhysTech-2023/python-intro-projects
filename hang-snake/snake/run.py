@@ -1,8 +1,7 @@
 from pynput import keyboard
 from random import randint
 
-WIDTH, HEIGHT = ..., ...
-# можно приделать конфиг-файл с параметрами
+WIDTH, HEIGHT = 10, 15
 direction = (1, 0)
 
 
@@ -11,7 +10,6 @@ def random_position():
 
 
 def process_press(key):
-    # обработчик нажатия на клавиши (можно сделать и поаккуратнее)
     global direction
     match key:
         case keyboard.Key.left:
