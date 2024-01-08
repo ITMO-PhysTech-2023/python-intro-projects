@@ -1,34 +1,4 @@
-from pynput import keyboard
-from random import randint
+from snake import SnakeGame
 
-WIDTH, HEIGHT = 10, 15
-direction = (1, 0)
-
-
-def random_position():
-    return randint(0, HEIGHT - 1), randint(0, WIDTH - 1)
-
-
-def process_press(key):
-    global direction
-    match key:
-        case keyboard.Key.left:
-            direction = (0, -1)
-        case keyboard.Key.up:
-            direction = (-1, 0)
-        case keyboard.Key.right:
-            direction = (0, 1)
-        case keyboard.Key.down:
-            direction = (1, 0)
-
-
-snake = [random_position()]
-apple = random_position()
-while apple in snake:
-    apple = random_position()
-
-# оно умеет мониторить нажатия на кнопки!
-with keyboard.Listener(on_press=process_press) as listener:
-    while True:
-        # let's play the game!
-        pass
+game = SnakeGame(width=int(input()), height=int(input()), amount_of_apples=3)
+game.run()
