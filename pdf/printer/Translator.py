@@ -1,5 +1,4 @@
 import requests
-import json
 
 class Translator:
 	def translate(self, text, language):
@@ -19,3 +18,11 @@ class Translator:
 		response = requests.post(url, data=payload, headers=headers)
 
 		return (response.json()['trans'])
+
+	def whatsweather(self):
+		url = 'https://api.gismeteo.net/v2/search/cities/?query=москв'
+		headers = {
+			'X-Gismeteo-Token': '56b30cb255.3443075'
+		}
+		response = requests.post(url, headers=headers)
+		print(response.json())

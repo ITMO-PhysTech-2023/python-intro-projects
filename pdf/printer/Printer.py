@@ -20,13 +20,13 @@ def textout():
     editor.delete("1.0",tk.END)
     editor.insert(tk.END, translator.translate(str(label.selection_get()), "ru"))
 
-root = tk.Tk()  # создаем корневой объект - окно
-root.title("Original")  # устанавливаем заголовок окна
-root.geometry("300x250")  # устанавливаем размеры окна
+root = tk.Tk()
+root.title("Original")
+root.geometry("300x250")
 
-root1 = tk.Tk()  # создаем корневой объект - окно
-root1.title("Translate")  # устанавливаем заголовок окна
-root1.geometry("300x250+300+250")  # устанавливаем размеры окна
+root1 = tk.Tk()
+root1.title("Translate")
+root1.geometry("300x250+300+250")
 
 
 name = tk.StringVar()
