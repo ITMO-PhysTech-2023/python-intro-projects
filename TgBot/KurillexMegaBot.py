@@ -1,24 +1,33 @@
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters.command import Command
+from aiogram import Bot, Dispatcher, types, F
+import os, signal, asyncio, logging, requests
+from aiogram.filters.command import Command, CommandStart
 from aiogram.enums import ParseMode
-from aiogram import F
-import requests
 from bs4 import BeautifulSoup
-import asyncio
-import logging
 
-TOKEN = '6795759902:AAF6EQEUhrKdKR4Z5_GolbdAMrWF3ITEsN0'
+TOKEN = '6795759902:AAFQyQfcAPa5E70mcqaxcTVFoT8v6uyXAGM'
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 
-@dp.message(Command("start"))
+@dp.message(CommandStart())
 async def cmd_start(message: types.Message):
+    keyboard = Change_league()
+    await message.answer("Выберите лигу", reply_markup=keyboard)
+
+
+@dp.message(Command("stop"))
+async def stop_bot(message: types.Message):
+    # Здесь можно добавить проверку на админа или другие условия
+    await message.reply("Выключаю бот.")
+    await os.kill(os.getpid(), signal.SIGINT)
+
+
+def Change_league():
     kb = [
         [
             types.KeyboardButton(text=choice)
-            for choice in ["🏴󠁧󠁢󠁥󠁮󠁧󠁿АПЛ", "🇪🇸ЛаЛига", "🇩🇪Бундеслига", "🇮🇹Серия А", "🇫🇷Лига 1", " 🇷🇺РПЛ"]
+            for choice in ["🏴󠁧󠁢󠁥󠁮󠁧󠁿АПЛ", "🇪🇸ЛаЛига", "🇩🇪Бундеслига", "🇮🇹Серия А", "🇫🇷Лига 1", "🇷🇺РПЛ"]
         ]
     ]
 
@@ -28,10 +37,10 @@ async def cmd_start(message: types.Message):
         row_width=5,  # Установите желаемую ширину строки
         input_field_placeholder="Выберите лигу"
     )
-    await message.answer("Выберите лигу", reply_markup=keyboard)
+    return keyboard
 
 
-def get_data(link):
+def get_data_tables(link):
     response = requests.get(link)
     html = response.text
     soup = BeautifulSoup(html, 'lxml')
@@ -62,65 +71,100 @@ def get_data(link):
     return clubs
 
 
-@dp.message(F.text == "🏴󠁧󠁢󠁥󠁮󠁧󠁿АПЛ")
-async def button_apl(message: types.Message):
-    LINK = "https://rsport.ria.ru/category_premier_league_england/tablitsa/"
-    clubs = get_data(LINK)
-    table = 'Таблица 🏴󠁧󠁢󠁥󠁮󠁧󠁿АПЛ:' + '\n'
-    for team in clubs:
-        table += team + '\n'
-    await bot.send_message(chat_id=message.chat.id, text=table, parse_mode='HTML')
+def get_data_goals(link):
+    response = requests.get(link)
+    html = response.text
+    soup = BeautifulSoup(html, 'lxml')
+    trs = soup.find('div', class_="rsport-table").find('table').find_all('tr')
+    surname, team, goals = [], [], []
+    for tr in trs:
+        player = tr.find_all(class_="person-item-name")
+        for i in player:
+            surname.append(i.text)
+    for tr in trs:
+        player = tr.find_all(class_="team-item-name")
+        for i in player:
+            team.append(i.text)
+    for tr in trs:
+        player = tr.find_all(class_="m-min m-br m-tac m-nowr")
+        for i in player:
+            goals.append(i.text[:2])
+    players = []
+    for i in range(len(goals)):
+        players.append(str(i + 1) + '. ' + surname[i] + '(' + team[i] + ')  ' + goals[i])
+    for pl in players:
+        print(pl)
+    return players
 
 
-@dp.message(F.text == "🇪🇸ЛаЛига")
-async def button_laliga(message: types.Message):
-    LINK = "https://rsport.ria.ru/category_primera_division/tablitsa/"
-    clubs = get_data(LINK)
-    table = 'Таблица 🇪🇸ЛаЛиги:' + '\n'
-    for team in clubs:
-        table += team + '\n'
-    await bot.send_message(chat_id=message.chat.id, text=table)
+async def handle_league(message: types.Message, league_name, tablelink, goalslink):
+    kb = [
+        [
+            types.KeyboardButton(text=choice)
+            for choice in ["Таблица", "Бомбардиры"]
+        ]
+    ]
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        row_width=5,  # Установите желаемую ширину строки
+        input_field_placeholder="Выберите тип"
+    )
+    await bot.send_message(chat_id=message.chat.id, text="Выбери тип", reply_markup=keyboard)
+
+    @dp.message(F.text == "Таблица")
+    async def button_table(message1: types.Message):
+        clubs = get_data_tables(tablelink)
+        table = f'Таблица {league_name}:\n'
+        for team in clubs:
+            table += team + '\n'
+        await bot.send_message(chat_id=message1.chat.id, text=table, parse_mode='HTML')
+
+    @dp.message(F.text == "Бомбардиры")
+    async def button_goals(message2: types.Message):
+        names = get_data_goals(goalslink)
+        table = f'Бомбардиры {league_name}:' + '\n'
+        for team in names:
+            table += team + '\n'
+        await bot.send_message(chat_id=message2.chat.id, text=table, parse_mode='HTML')
 
 
 @dp.message(F.text == "🇩🇪Бундеслига")
 async def button_bundesliga(message: types.Message):
-    LINK = "https://rsport.ria.ru/category_bundesliga/tablitsa/"
-    clubs = get_data(LINK)
-    table = 'Таблица 🇩🇪Бундеслиги:' + '\n'
-    for team in clubs:
-        table += team + '\n'
-    await bot.send_message(chat_id=message.chat.id, text=table)
+    await handle_league(message, "🇩🇪Бундеслиги", "https://rsport.ria.ru/category_bundesliga/tablitsa/",
+                        "https://rsport.ria.ru/category_bundesliga/statistika/")
+
+
+@dp.message(F.text == "🏴󠁧󠁢󠁥󠁮󠁧󠁿АПЛ")
+async def button_bundesliga(message: types.Message):
+    await handle_league(message, "🏴󠁧󠁢󠁥󠁮󠁧󠁿АПЛ", "https://rsport.ria.ru/category_premier_league_england/tablitsa/",
+                        "https://rsport.ria.ru/category_premier_league_england/statistika/")
+
+
+@dp.message(F.text == "🇪🇸ЛаЛига")
+async def button_laliga(message: types.Message):
+    await handle_league(message, "🇪🇸ЛаЛига", "https://rsport.ria.ru/category_primera_division/tablitsa/",
+                        "https://rsport.ria.ru/category_primera_division/statistika/")
 
 
 @dp.message(F.text == "🇮🇹Серия А")
 async def button_seriea(message: types.Message):
-    LINK = "https://rsport.ria.ru/category_serie_a/tablitsa/"
-    clubs = get_data(LINK)
-    table = 'Таблица 🇮🇹Серии А:' + '\n'
-    for team in clubs:
-        table += team + '\n'
-    await bot.send_message(chat_id=message.chat.id, text=table)
+    await handle_league(message, "🇮🇹Серия А", "https://rsport.ria.ru/category_serie_a/tablitsa/",
+                        "https://rsport.ria.ru/category_serie_a/statistika/")
 
 
 @dp.message(F.text == "🇫🇷Лига 1")
 async def button_ligue1(message: types.Message):
     LINK = "https://rsport.ria.ru/category_ligue_1/tablitsa/"
-    clubs = get_data(LINK)
-    table = 'Таблица 🇫🇷Лиги 1:' + '\n'
-    for team in clubs:
-        table += team + '\n'
-    await bot.send_message(chat_id=message.chat.id, text=table)
+    await handle_league(message, "🇫🇷Лига 1", "https://rsport.ria.ru/category_ligue_1/tablitsa/",
+                        "https://rsport.ria.ru/category_ligue_1/statistika/")
 
 
 @dp.message(F.text == "🇷🇺РПЛ")
 async def button_apl(message: types.Message):
     LINK = "https://rsport.ria.ru/category_premier_league_russia/tablitsa/"
-    clubs = get_data(LINK)
-    table = 'Таблица 🇷🇺РПЛ:'    + '\n'
-
-    for team in clubs:
-        table += team + '\n'
-    await bot.send_message(chat_id=message.chat.id, text=table)
+    await handle_league(message, "🇷🇺РПЛ", "https://rsport.ria.ru/category_premier_league_russia/tablitsa/",
+                        "https://rsport.ria.ru/category_premier_league_russia/statistika/")
 
 
 async def main():
