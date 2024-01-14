@@ -1,7 +1,12 @@
+import time
 from common.util import clear_terminal
-from random_word import RandomWords #библиотека рандомных слов
+from random_word import RandomWords
+random_generator = RandomWords()
 
-randomWords = RandomWords()
+
+def create_secret_word():
+    return random_generator.get_random_word()
+
 
 FINAL_FIELD = r'''
    +----+
@@ -20,71 +25,82 @@ HUMAN = [
     (5, 2),
     (5, 4)
 ]
-human_parts = 0
+HUMAN_PARTS = len(HUMAN)
 
 
-def create_secret_word():
-    return randomWords.get_random_word()
+class Field:
+    def __init__(self):
+        self.remaining_fails = HUMAN_PARTS
+        self.matrix = [
+            list(row)
+            for row in FINAL_FIELD
+        ]
+        for row, col in HUMAN:
+            self.matrix[row][col] = ' '
+
+    def print(self):
+        for row in self.matrix:
+            print(''.join(row))
+        print()
+
+    def add_human_part(self):
+        row, col = HUMAN[-self.remaining_fails]
+        self.remaining_fails -= 1
+        self.matrix[row][col] = FINAL_FIELD[row][col]
 
 
-def global_variables():
-    secret = create_secret_word()
-    n = len(secret)
-    guessed = ['_' for i in range(n)]
-    field = [list(row) for row in FINAL_FIELD]
-    for cell in HUMAN:
-        field[cell[0]][cell[1]] = ' '
-    return secret, guessed, field, n
+class HangmanGame:
+    def __init__(self, step_sleep: float, secret: str):
+        self.field = Field()
+        self.step_sleep = step_sleep
+        self.secret = secret
+        self.guessed = ['_' for _ in range(len(self.secret))]
 
+    def read_guess(self, letter) -> str:
+        while True:
+            # letter = self.provider.get_next_letter().lower()
+            if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
+                print('Invalid guess! Try again (enter a letter)')
+                continue
+            return letter
 
-SECRET, GUESSED, FIELD, n = global_variables()
-
-
-def play_again():
-    global SECRET, GUESSED, FIELD, n, human_parts
-    while True:
-        play_again = input('Want to play again? enter yes or no ').lower()
-        if play_again == 'yes':
-            SECRET, GUESSED, FIELD, n = global_variables()
-            human_parts = 0
-            return True
-        elif play_again == 'no':
-            return False
+    def check_guess(self, letter: str):
+        if letter in self.secret:
+            for i in range(len(self.secret)):
+                if self.secret[i] == letter:
+                    self.guessed[i] = letter
         else:
-            print('Invalid enter. Please try again')
+            self.field.add_human_part()
+
+    def is_won(self) -> bool:
+        return '_' not in self.guessed
+
+    def is_lost(self) -> bool:
+        return self.field.remaining_fails == 0
+
+    def step(self, snake_letter):
+        letter = self.read_guess(snake_letter)
+        self.check_guess(letter)
+        time.sleep(self.step_sleep)
+
+    def show(self):
+        clear_terminal()
+        self.field.print()
+        print(''.join(self.guessed))
+
+    def run(self):
+        self.show()
+        while True:
+            self.step()
+            self.show()
+            if self.is_won():
+                print('Cool! You won!')
+                break
+            if self.is_lost():
+                print('Wow, you lost! Sad :(')
+                break
 
 
-FLAG = True
-while FLAG:
-    # 1
-    clear_terminal()
-    for row in FIELD:
-        print(''.join(row))
-    print()
-    print(''.join(GUESSED))
-
-    # 2 and 3
-    letter = input('Enter your guess: ').lower()
-    if len(letter) != 1 and ord(letter) < ord('a') or ord(letter) > ord('z'):
-        print('Try again. Enter a letter')
-        continue
-    # 4
-    if letter in SECRET:
-        print('Great job!')
-        for i in range(n):
-            if SECRET[i] == letter:
-                GUESSED[i] = letter
-    else:
-        print('What a pity :(')
-        cell = HUMAN[human_parts]
-        human_parts += 1
-        FIELD[cell[0]][cell[1]] = FINAL_FIELD[cell[0]][cell[1]]
-
-    # 5
-    if '_' not in GUESSED:
-        print('You won!')
-        FLAG = play_again()
-
-    if human_parts == len(HUMAN):
-        print('You lose!')
-        FLAG = play_again()
+if __name__ == '__main__':
+    game = HangmanGame(1, 'mama')
+    game.run()
