@@ -60,7 +60,7 @@ class Snake:
         if head == self.body[1]:
             head = [self.head[0] - self.direction[0], self.head[1] - self.direction[1]]
             self.head = head
-        if (head[1] < 0 or head[1] > Snake_Field.width or head[0] < 0 or head[0] > Snake_Field.height or head in self.body) and self.direction != (0, 0):
+        if (head[1] < 0 or head[1] > Snake_Field.width - 1 or head[0] < 0 or head[0] > Snake_Field.height or head in self.body) and self.direction != (0, 0):
             snake_game_over()
         else:
             self.head = head
@@ -162,7 +162,7 @@ def process_press(key):
         case keyboard.Key.down:
             direction = (1, 0)
 
-FPS = 50
+FPS = 100
 counter = 0
 direction = (0, 0)
 
@@ -184,7 +184,6 @@ def await_input():
     with keyboard.Listener(on_press=process_press) as listener:
         for i in range(int((1 / FPS) / 0.001) + 1):
             time.sleep(0.01)
-        counter += 1
     
 
 def game_move(Snake, Snake_Field):
@@ -193,21 +192,19 @@ def game_move(Snake, Snake_Field):
     eaten = Snake.crawl(Snake_Field)
     clear_terminal()
     #print_Snake_Field(Snake_Field, Snake)
-    if counter % 30 == 0 or (eaten and Snake_Field.letters == []) or not check_correct(field, correct) or len(Snake_Field.letters) < MAX_LETTERS:
-        counter = 0
+    if not check_correct(field, correct) or len(Snake_Field.letters) < MAX_LETTERS:
         if len(Snake_Field.letters) >= MAX_LETTERS:
             Snake_Field.delete_letter(0)
         new_letter = Snake_Field.spawn_letter()
-        while new_letter in Snake.body or not check_correct(field, correct):
-            if len(Snake_Field.letters) > 0:
-                Snake_Field.delete_letter(0)
+        while new_letter[1] in Snake.body or not check_correct(field, correct):
+            
+            Snake_Field.delete_letter(new_letter[1])
             new_letter = Snake_Field.spawn_letter()
 
 def hangsnake_output(field, snake, guessed, correct, incorrect, tries):
     output = []
     snake_output = print_Snake_Field(field, snake)
     hang_output = print_hang_field(guessed, correct, incorrect, tries)
-
 
     for i in range(len(snake_output)):
         if i < len(hang_output):
@@ -229,27 +226,28 @@ def osn():
     game_move(snake, field)
     if eaten_letter != '':
         answer, correct, incorrect, guessed = user_input(eaten_letter)
-        if answer == incorrect_msg:
+        if answer == incorrect_msg or answer == gameover_msg:
             tries -= 1
+        elif answer == gameover_msg:
+            EXIT = True
         eaten_letter = ''
     strings = hangsnake_output(field, snake, guessed, correct, incorrect, tries)
 
     for string in strings:
         print(string, end = '')
-    print(check_correct(field, correct))
     if tries <= 0:
         EXIT = True
 
 field = Snake_Field()
 for i in range(MAX_LETTERS):
     field.spawn_letter()
-print(field.letters)
+#print(field.letters)
 snake = Snake(direction = (0, 0))
 spawn_Snake(field, snake)
 
 word, guessed = hang_init()
-print(word)
-input()
+#print(word)
+input('Ready?')
 tries = 6
 while not EXIT:
     

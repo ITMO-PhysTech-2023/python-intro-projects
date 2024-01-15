@@ -95,3 +95,4 @@ def translate(input_text, orig_lang, target_lang):
     return response.json()['translations']['translation']
 #print(summarize('Hello!'))
 #print(translate('Текст (от лат. textus — ткань; сплетение, сочетание) — зафиксированная на каком-либо материальном носителе человеческая мысль; в общем плане связная и полная последовательность символов.', 'ru', 'en'))
+
